@@ -1,0 +1,47 @@
+version: '3.8'
+name: JavaTeam38Backend
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: socialnet
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - data:/var/lib/postgresql/data
+    networks:
+      - socialnet_network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.11.16-management
+    restart: unless-stopped
+    # environment:
+      # - RABBITMQ_DEFAULT_USER=admin
+      # - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - data:/var/lib/rabbitmq/mnesia/
+    networks:
+      - socialnet_network
+
+volumes:
+  data:
+    driver: local
+
+networks:
+  socialnet_network:
+    driver: bridge
