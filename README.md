@@ -1,6 +1,29 @@
 # social-net-backend
 
-
+## Build: postgre, rabbitmq
+Требуется установленный Docker  
+- в терминале из корня проекта запустить  
+    ```
+    docker-compose up -d
+    ```
+    или ```docker-compose -f docker-compose.yml up -d```  
+    будут созданы контейнеры postgre и rabbit, порты:  
+    &emsp; postgre: 5432  
+    &emsp; rabbit amqp: 5672  
+    &emsp; rabbit client (login: guest, password: guest): <http://localhost:15672/>  
+    в postgre созданы бд socialnet, develop
+    
+- терминал postgre
+    ```bash
+    docker exec -it postgres psql -U postgres
+    ```
+-  rabbitmq
+    ```bash
+    docker exec -it rabbitmq bash
+    ```
+    утилиты rabbit: 
+    - rabbitmqctl - для обслуживания сервера/кластера
+    - rabbitmqadmin - требует авторизации, вместо клиента в бразуере
 
 ## Getting started
 
