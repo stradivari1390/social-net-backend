@@ -1,5 +1,11 @@
 # social-net-backend
 
+***
+### Docker hub
+Логин: javapro38
+
+Пароль: javapro38_team
+***
 ## Build: postgre, rabbitmq
 Требуется установленный Docker  
 - в терминале из корня проекта запустить  
