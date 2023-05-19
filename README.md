@@ -20,16 +20,55 @@
     в postgre созданы бд socialnet, develop
     
 - терминал postgre
+## Build: postgre, rabbitmq, frontend
+Требуется:
+- установленный Docker  
+- созданный имадж frontend (см. README проекта social-net-frontend)
+
+В терминале из корня проекта запустить  
+```
+docker-compose up -d
+```
+или 
+```
+docker-compose -f docker-compose.yml up -d
+```  
+Будут созданы контейнеры postgre, rabbit и frontend. 
+
+Порты:  
+- postgre: 5432
+- rabbit: 5672  
+- frontend: 8098  
+
+rabbit client (login: guest, password: guest): <http://localhost:15672/>  
+
+В postgre созданы бд socialnet, develop.
+
+Терминалы:
+- postgre
     ```bash
     docker exec -it postgres psql -U postgres
     ```
--  rabbitmq
+- rabbitmq
     ```bash
     docker exec -it rabbitmq bash
     ```
-    утилиты rabbit: 
-    - rabbitmqctl - для обслуживания сервера/кластера
-    - rabbitmqadmin - требует авторизации, вместо клиента в бразуере
+- frontend
+    ```bash
+    docker exec -it frontend bash
+    ```
+Утилиты rabbit: 
+- rabbitmqctl - для обслуживания сервера/кластера
+- rabbitmqadmin - требует авторизации, вместо клиента в бразуере
+
+Остановка контейнеров (из корня проекта):
+```
+docker-compose down
+```
+или
+```
+docker-compose -f docker-compose.yml down
+```  
 
 ## Getting started
 
