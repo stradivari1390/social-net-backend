@@ -1,4 +1,4 @@
-package ru.command38.micro;
+package ru.team38.userservice;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Unit test for simple App.
  */
-public class AppTest 
+public class UserServiceTest
 {
     /**
      * Rigorous Test :-)
