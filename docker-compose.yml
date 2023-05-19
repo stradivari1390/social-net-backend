@@ -1,5 +1,5 @@
 version: '3.8'
-name: JavaTeam38Backend
+name: javateam38-backend
 
 services:
   postgres:
@@ -35,6 +35,15 @@ services:
       - 5672:5672
     volumes:
       - data:/var/lib/rabbitmq/mnesia/
+    networks:
+      - socialnet_network
+
+  frontend:
+    container_name: frontend
+    image: frontend
+    restart: unless-stopped
+    ports:
+      - 8098:80
     networks:
       - socialnet_network
 
