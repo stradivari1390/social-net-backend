@@ -6,13 +6,12 @@
 
   <groupId>socialnet.team38</groupId>
   <artifactId>social-network</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-
+  <version>1.0-SNAPSHOT</version>
   <modules>
     <module>gateway-service</module>
     <module>user-service</module>
-    <module>communicate-service</module>
+    <module>communications-service</module>
     <module>admin-service</module>
   </modules>
 
