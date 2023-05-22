@@ -1,0 +1,4 @@
+server.port: 8081
+application:
+  title: User Service
+  version: v1.0
