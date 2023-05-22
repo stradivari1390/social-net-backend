@@ -1,0 +1,77 @@
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 10000
+            readTimeout: 10000
+    gateway:
+      routes:
+        - id: user-service
+          uri: http://109.184.122.25:8081
+          predicates:
+            - Path=/user-service/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                burstCapacity: 10
+                replenishRate: 2
+                redis-rate-limiter:
+                  replenishRate: 10
+                  burstCapacity: 20
+        - id: communicate-service
+          uri: http://109.184.122.25:8082
+          predicates:
+            - Path=/communicate-service/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                burstCapacity: 10
+                replenishRate: 2
+                redis-rate-limiter:
+                  replenishRate: 10
+                  burstCapacity: 20
+        - id: admin-service
+          uri: http://109.184.122.25:8083
+          predicates:
+            - Path=/admin-service/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                burstCapacity: 10
+                replenishRate: 2
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+  security:
+    user:
+      name: admin
+      password: 12345678
+    oauth2:
+      client:
+        registration:
+          github:
+            #clientId: CREATE!!!
+            #clientSecret: CREATE!!!
+            authorizationGrantType: authorization_code
+            redirectUri: http://109.184.122.25:8080/oauth2/callback/github
+            scope:
+              - read:user
+              - user:email
+        provider:
+          github:
+            authorizationUri: https://github.com/login/oauth/authorize
+            tokenUri: https://github.com/login/oauth/access_token
+            userInfoUri: https://api.github.com/user
+            userNameAttribute: id
+
+jwt:
+  secret: team38
+
+server:
+  servlet:
+    session:
+      tracking-modes: cookie
+
+logging:
+  config: logback-spring.xml
