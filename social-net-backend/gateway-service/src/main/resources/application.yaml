@@ -1,15 +1,9 @@
 spring:
   cloud:
-    openfeign:
-      client:
-        config:
-          default:
-            connectTimeout: 10000
-            readTimeout: 10000
     gateway:
       routes:
         - id: user-service
-          uri: http://109.184.122.25:8081
+          uri: lb://user-service
           predicates:
             - Path=/user-service/**
           filters:
@@ -20,10 +14,10 @@ spring:
                 redis-rate-limiter:
                   replenishRate: 10
                   burstCapacity: 20
-        - id: communicate-service
-          uri: http://109.184.122.25:8082
+        - id: communications-service
+          uri: lb://communications-service
           predicates:
-            - Path=/communicate-service/**
+            - Path=/communications-service/**
           filters:
             - name: RequestRateLimiter
               args:
@@ -33,7 +27,7 @@ spring:
                   replenishRate: 10
                   burstCapacity: 20
         - id: admin-service
-          uri: http://109.184.122.25:8083
+          uri: lb://admin-service
           predicates:
             - Path=/admin-service/**
           filters:
