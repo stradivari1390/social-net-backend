@@ -58,9 +58,9 @@ services:
     networks:
       - socialnet_network
 
-  communicate-service:
+  communications-service:
     build:
-      context: ./social-net-backend/communicate-service
+      context: ./social-net-backend/communications-service
     depends_on:
       - postgres
       - rabbitmq
