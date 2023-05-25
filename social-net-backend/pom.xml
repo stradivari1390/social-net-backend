@@ -21,6 +21,7 @@
     <module>user-service</module>
     <module>communications-service</module>
     <module>admin-service</module>
+    <module>common</module>
   </modules>
 
   <name>social-network</name>
