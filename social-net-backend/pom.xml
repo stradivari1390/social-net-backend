@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.5</version>
+    <version>3.0.7</version>
     <relativePath/>
   </parent>
 
@@ -22,6 +22,7 @@
     <module>communications-service</module>
     <module>admin-service</module>
     <module>common</module>
+    <module>db-management</module>
   </modules>
 
   <name>social-network</name>
@@ -31,13 +32,12 @@
     <java.version>17</java.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <spring-boot-dependencies.version>3.0.6</spring-boot-dependencies.version>
-    <spring-cloud-dependencies.version>2022.0.2</spring-cloud-dependencies.version>
+
+    <spring-boot-dependencies.version>3.0.7</spring-boot-dependencies.version>
+    <spring-cloud-dependencies.version>2022.0.3</spring-cloud-dependencies.version>
     <selenium-java.version>4.8.2</selenium-java.version>
     <lombok.version>1.18.26</lombok.version>
     <snakeyaml.version>2.0</snakeyaml.version>
-    <postgresql.version>42.5.4</postgresql.version>
-    <liquibase-core.version>4.20.0</liquibase-core.version>
 
     <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
@@ -97,45 +97,16 @@
       <version>${selenium-java.version}</version>
     </dependency>
     <!--Testing-->
-
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>2.0</version>
+    </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${lombok.version}</version>
     </dependency>
-
-    <!--DataBase-->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.yaml</groupId>
-          <artifactId>snakeyaml</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>${snakeyaml.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
-      <version>${liquibase-core.version}</version>
-    </dependency>
-    <!--DataBase-->
   </dependencies>
 
   <build>
