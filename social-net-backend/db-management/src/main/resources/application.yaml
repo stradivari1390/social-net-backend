@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url:
+    username:
+    password:
+  jooq:
+    sql-dialect: POSTGRES
