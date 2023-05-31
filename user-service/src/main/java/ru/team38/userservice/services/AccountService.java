@@ -1,15 +1,21 @@
 package ru.team38.userservice.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.team38.userservice.MockUserBase;
 import ru.team38.userservice.dto.AccountDto;
 import ru.team38.userservice.dto.AccountSearchDto;
 import ru.team38.userservice.dto.PageDto;
+import ru.team38.userservice.dto.RegisterDto;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
+  private final MockUserBase mockUserBase;
+
   public AccountDto getAccount() {
     AccountDto account = AccountDto.builder()
       .id(42352L).isDeleted(false).firstName("Foma").lastName("Kinyaev")
@@ -37,5 +43,9 @@ public class AccountService {
 
   public AccountDto findAccount(AccountSearchDto accountSearchDto, PageDto page) {
     return new AccountDto();
+  }
+
+  public boolean register(RegisterDto registerDto) {
+    return mockUserBase.addAccount(registerDto);
   }
 }
