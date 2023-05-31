@@ -69,24 +69,12 @@ services:
     networks:
       - socialnet_network
 
-  admin-service:
-    build:
-      context: ./social-net-backend/admin-service
-    depends_on:
-      - postgres
-      - rabbitmq
-    ports:
-      - 8083:8083
-    networks:
-      - socialnet_network
-
   gateway-service:
     build:
       context: ./social-net-backend/gateway-service
     depends_on:
       - user-service
       - communicate-service
-      - admin-service
     ports:
       - 8080:8080
     networks:
