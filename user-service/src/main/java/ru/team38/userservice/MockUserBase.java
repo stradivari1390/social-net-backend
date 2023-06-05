@@ -6,20 +6,21 @@ import ru.team38.userservice.dto.LoginForm;
 import ru.team38.userservice.dto.RegisterDto;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class MockUserBase {
-    HashMap<String, String> userBase = new HashMap<>();
+
+    Map<String, String> userBase = new HashMap<>();
 
     {
         userBase.put("test", "test");
     }
 
     public boolean isValidUser(LoginForm loginForm) {
-        boolean checkUser = userBase.containsKey(loginForm.getEmail())
+        return userBase.containsKey(loginForm.getEmail())
                 && userBase.get(loginForm.getEmail()).equals(loginForm.getPassword());
-        return checkUser;
     }
 
     public boolean addAccount(RegisterDto account) {
@@ -29,5 +30,9 @@ public class MockUserBase {
         }
         userBase.put(key, account.toString());
         return true;
+    }
+
+    public Map<String, String> getUserBase() {
+        return userBase;
     }
 }

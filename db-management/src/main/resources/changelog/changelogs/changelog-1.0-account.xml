@@ -68,12 +68,5 @@
         <!-- keys -->
         <addUniqueConstraint columnNames="email" constraintName="account_email_key" tableName="account" schemaName="socialnet"/>
 
-        <!-- indexes -->
-        <createIndex indexName="account_email_key" tableName="account" schemaName="socialnet">
-            <column name="email"/>
-        </createIndex>
-        <createIndex indexName="account_pkey" tableName="account" schemaName="socialnet">
-            <column name="id"/>
-        </createIndex>
     </changeSet>
 </databaseChangeLog>
