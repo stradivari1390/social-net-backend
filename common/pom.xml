@@ -9,7 +9,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>socialnet.team38.common</groupId>
     <artifactId>common</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>common</name>

@@ -3,6 +3,7 @@ package ru.team38.userservice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.team38.userservice.dto.LoginForm;
+import ru.team38.userservice.dto.RegisterDto;
 
 import java.util.HashMap;
 
@@ -19,5 +20,14 @@ public class MockUserBase {
         boolean checkUser = userBase.containsKey(loginForm.getEmail())
                 && userBase.get(loginForm.getEmail()).equals(loginForm.getPassword());
         return checkUser;
+    }
+
+    public boolean addAccount(RegisterDto account) {
+        final String key = account.getEmail();
+        if (userBase.containsKey(key)) {
+            return false;
+        }
+        userBase.put(key, account.toString());
+        return true;
     }
 }
