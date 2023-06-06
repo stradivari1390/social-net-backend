@@ -1,29 +1,24 @@
 package ru.team38.userservice.security.security_services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import ru.team38.gatewayservice.clients.UserServiceClient;
+import ru.team38.userservice.MockUserBase;
 import ru.team38.userservice.security.dto.UserDto;
 import ru.team38.userservice.security.oauth.CustomOAuth2User;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserServiceClient userServiceClient;
-
-    @Autowired
-    public CustomOAuth2UserService(UserServiceClient userServiceClient) {
-        this.userServiceClient = userServiceClient;
-    }
+    private final MockUserBase mockUserBase;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -41,16 +36,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
         String phone = oAuth2User.getAttribute("phone");
-        UserDetails userDetails = userServiceClient.getUserDetailsByEmail(email);
         UserDto userDto = new UserDto();
-        if (userDetails == null) {
+        if (!mockUserBase.getUserBase().containsKey(email)) {
             userDto.setName(name);
             userDto.setEmail(email);
             userDto.setPhone(phone == null ? "" : phone);
-            userServiceClient.sendUserDtoDataForRegistration(userDto);
+            if (email != null && name != null) {
+                mockUserBase.getUserBase().put(email, name);
+            }
         } else {
-            userDto.setName(userDetails.getUsername());
-            userDto.setPass(userDetails.getPassword());
+            userDto.setName(email);
+            userDto.setPass(mockUserBase.getUserBase().get(email));
             userDto.setEmail("");
             userDto.setPhone("");
         }

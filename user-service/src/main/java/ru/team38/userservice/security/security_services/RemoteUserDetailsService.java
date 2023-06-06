@@ -2,32 +2,34 @@ package ru.team38.userservice.security.security_services;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.team38.gatewayservice.clients.UserServiceClient;
+import ru.team38.userservice.MockUserBase;
+
+import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class RemoteUserDetailsService implements UserDetailsService {
 
-    private final UserServiceClient userServiceClient;
-    private final AuthenticationManager authenticationManager;
+    private final MockUserBase mockUserBase;
 
-    @Autowired
-    public RemoteUserDetailsService(UserServiceClient userServiceClient, AuthenticationManager authenticationManager) {
-        this.userServiceClient = userServiceClient;
-        this.authenticationManager = authenticationManager;
-    }
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userServiceClient.getUserDetailsByUsername(username);
+        if (mockUserBase.getUserBase().containsKey(username)) {
+            return new User(username, mockUserBase.getUserBase().get(username), new ArrayList<>());
+        }
+        throw new UsernameNotFoundException("User not found with username: " + username);
     }
 
     public void authenticate(String username, String password) throws Exception {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml" />
     <property name="LOG_FILE" value="./logs/app.log"/>
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <appender name="FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}</file>
         <encoder>
             <pattern>%date{ISO8601} %5level --- [%15thread] %-40.40logger{39} : %message%n</pattern>
@@ -12,8 +12,8 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
+
     <root level="INFO">
-        <appender-ref ref="FILE" />
+        <appender-ref ref="FILE_APPENDER" />
     </root>
-    <logger name="reactor.netty.http.server" level="DEBUG"/>
 </configuration>
