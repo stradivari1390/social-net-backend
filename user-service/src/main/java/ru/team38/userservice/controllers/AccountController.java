@@ -36,7 +36,6 @@ public class AccountController {
     return ResponseEntity.ok(accountService.findAccount(accountSearch, page));
   }
 
-
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
     if (accountService.register(registerDto)) {
