@@ -5,7 +5,12 @@ application:
 captcha:
   length: 3
 
-spring:
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://127.0.0.1:5433/socialnet
+#    username: postgres
+#    password: postgres
+
   security:
     user:
       name: admin

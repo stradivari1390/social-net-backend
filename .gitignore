@@ -10,3 +10,8 @@ target/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+#logs
+*/log/
+*/logs/
+# jooq
+common/src/main/java/ru/team38/common/jooq/
