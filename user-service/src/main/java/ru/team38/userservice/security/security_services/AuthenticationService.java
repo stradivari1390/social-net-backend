@@ -7,30 +7,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.team38.userservice.MockUserBase;
-
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
-public class RemoteUserDetailsService implements UserDetailsService {
-
-    private final MockUserBase mockUserBase;
+public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (mockUserBase.getUserBase().containsKey(username)) {
-            return new User(username, mockUserBase.getUserBase().get(username), new ArrayList<>());
-        }
-        throw new UsernameNotFoundException("User not found with username: " + username);
-    }
 
     public void authenticate(String username, String password) throws Exception {
         try {

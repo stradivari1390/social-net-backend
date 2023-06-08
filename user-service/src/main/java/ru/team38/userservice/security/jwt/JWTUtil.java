@@ -5,12 +5,12 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import ru.team38.userservice.security.security_services.RemoteUserDetailsService;
+import ru.team38.userservice.security.security_services.CustomUserDetailsService;
 import ru.team38.userservice.security.security_services.TokenBlacklistService;
 
 import java.util.Date;
@@ -19,19 +19,14 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JWTUtil {
 
     private static long jwtTokenValidity = 60 * 60 * 1000L;
     @Value("${jwt.secret}")
     private String secret;
     private final TokenBlacklistService tokenBlacklistService;
-    private final RemoteUserDetailsService remoteUserDetailsService;
-
-    @Autowired
-    public JWTUtil(TokenBlacklistService tokenBlacklistService, RemoteUserDetailsService remoteUserDetailsService) {
-        this.tokenBlacklistService = tokenBlacklistService;
-        this.remoteUserDetailsService = remoteUserDetailsService;
-    }
+    private final CustomUserDetailsService customUserDetailsService;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -84,6 +79,6 @@ public class JWTUtil {
 
     public UserDetails getUserDetails(String token) {
         String username = getUsernameFromToken(token);
-        return remoteUserDetailsService.loadUserByUsername(username);
+        return customUserDetailsService.loadUserByUsername(username);
     }
 }
