@@ -1,0 +1,1 @@
+DELETE FROM socialnet.account WHERE id BETWEEN 1000 AND 1009;
