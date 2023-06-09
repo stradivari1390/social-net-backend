@@ -13,21 +13,22 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <db.postgres.host>postgres</db.postgres.host>
+        <db.postgres.name>${postgres_db}</db.postgres.name>
+        <db.postgres.username>${postgres_user}</db.postgres.username>
+        <db.postgres.password>${postgres_password}</db.postgres.password>
+        <db.postgres.url>jdbc:postgresql://${db.postgres.host}/${db.postgres.name}</db.postgres.url>
+    </properties>
+
     <profiles>
         <profile>
             <id>localhost</id>
             <properties>
-                <database.url>${env.DATABASE_URL}</database.url>
-                <database.username>${env.DATABASE_USER}</database.username>
-                <database.password>${env.DATABASE_PASSWORD}</database.password>
-            </properties>
-        </profile>
-        <profile>
-            <id>remote-server</id>
-            <properties>
-                <database.url></database.url>
-                <database.username></database.username>
-                <database.password></database.password>
+                <db.postgres.host>localhost:5433</db.postgres.host>
+                <db.postgres.name>socialnet</db.postgres.name>
+                <db.postgres.username>postgres</db.postgres.username>
+                <db.postgres.password>postgres</db.postgres.password>
             </properties>
         </profile>
     </profiles>
@@ -81,9 +82,9 @@
                 <configuration>
                     <changeLogFile>src/main/resources/changelog/changelog-master.xml</changeLogFile>
                     <driver>org.postgresql.Driver</driver>
-                    <url>${database.url}</url>
-                    <username>${database.username}</username>
-                    <password>${database.password}</password>
+                    <url>${db.postgres.url}</url>
+                    <username>${db.postgres.username}</username>
+                    <password>${db.postgres.password}</password>
                 </configuration>
             </plugin>
             <!-- Liquibase plugin -->
@@ -104,14 +105,14 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>${database.url}</url>
-                        <user>${database.username}</user>
-                        <password>${database.password}</password>
+                        <url>${db.postgres.url}</url>
+                        <user>${db.postgres.username}</user>
+                        <password>${db.postgres.password}</password>
                     </jdbc>
                     <generator>
                         <database>
                             <name>org.jooq.meta.postgres.PostgresDatabase</name>
-                            <inputSchema>socialnet</inputSchema>
+                            <inputSchema>${db.postgres.name}</inputSchema>
                             <includes>.*</includes>
                         </database>
                         <target>
