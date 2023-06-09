@@ -1,8 +1,8 @@
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${DATABASE_URL:jdbc:postgresql://test:5433/test}
-    username: ${DATABASE_USER:test}
-    password: ${DATABASE_PASSWORD:test}
+    url:
+    username:
+    password:
   jooq:
     sql-dialect: POSTGRES
