@@ -6,8 +6,8 @@ import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.team38.userservice.dto.CaptchaDto;
-import ru.team38.userservice.dto.LoginForm;
+import ru.team38.userservice.data.dto.CaptchaDto;
+import ru.team38.userservice.data.dto.LoginForm;
 import ru.team38.userservice.services.AuthService;
 import ru.team38.userservice.services.CaptchaService;
 

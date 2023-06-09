@@ -2,7 +2,7 @@ package ru.team38.userservice.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.team38.userservice.dto.LoginForm;
+import ru.team38.userservice.data.dto.LoginForm;
 import ru.team38.userservice.MockUserBase;
 
 import java.util.concurrent.atomic.AtomicBoolean;

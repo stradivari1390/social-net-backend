@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-import ru.team38.userservice.dto.CaptchaDto;
+import ru.team38.userservice.data.dto.CaptchaDto;
 import ru.team38.userservice.exceptions.CaptchaCreationException;
 import ru.team38.userservice.MockCaptchaBase;
 
