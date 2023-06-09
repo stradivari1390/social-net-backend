@@ -32,9 +32,8 @@ import ru.team38.userservice.security.security_services.CustomOAuth2UserService;
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JWTUtil jwtTokenUtil;
+    // private final JWTUtil jwtTokenUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
@@ -52,55 +51,61 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder bCryptPasswordEncoder)
-            throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(remoteUserDetailsService)
-                .passwordEncoder(bCryptPasswordEncoder)
-                .and()
-                .build();
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .and()
-                    .authorizeHttpRequests()
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
-                    .requestMatchers("/**").permitAll()
-                    .anyRequest().authenticated()
-                .and().formLogin()
-                    .loginPage("/signin").failureUrl("/signin")
-                    .failureHandler(jwtAuthenticationFailureHandler)
-                    .defaultSuccessUrl("/profile")
-                .and().logout()
-                    .logoutUrl("/logout")
-                    .logoutSuccessUrl("/signin")
-                    .deleteCookies("token")
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                .and().oauth2Login()
-                    .loginPage("/signin")
-                    .authorizationEndpoint()
-                    .baseUri("/oauth2/authorize")
-                    .authorizationRequestRepository(cookieAuthorizationRequestRepository())
-                  .and()
-                    .redirectionEndpoint()
-                    .baseUri("/oauth2/callback/*")
-                  .and()
-                    .userInfoEndpoint()
-                    .userService(customOAuth2UserService)
-                  .and()
-                    .successHandler(oAuth2AuthenticationSuccessHandler)
-                    .failureHandler(oAuth2AuthenticationFailureHandler)
-                  .and().oauth2Client();
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.csrf().disable().authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenUtil);
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder bCryptPasswordEncoder)
+//            throws Exception {
+//        return http.getSharedObject(AuthenticationManagerBuilder.class)
+//                .userDetailsService(remoteUserDetailsService)
+//                .passwordEncoder(bCryptPasswordEncoder)
+//                .and()
+//                .build();
+//    }
+//
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http.csrf().disable()
+//                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//                .and()
+//                    .authorizeHttpRequests()
+//                    .requestMatchers("/admin/**").hasRole("ADMIN")
+//                    .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
+//                    .requestMatchers("/**").permitAll()
+//                    .anyRequest().authenticated()
+//                .and().formLogin()
+//                    .loginPage("/signin").failureUrl("/signin")
+//                    .failureHandler(jwtAuthenticationFailureHandler)
+//                    .defaultSuccessUrl("/profile")
+//                .and().logout()
+//                    .logoutUrl("/logout")
+//                    .logoutSuccessUrl("/signin")
+//                    .deleteCookies("token")
+//                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+//                .and().oauth2Login()
+//                    .loginPage("/signin")
+//                    .authorizationEndpoint()
+//                    .baseUri("/oauth2/authorize")
+//                    .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+//                  .and()
+//                    .redirectionEndpoint()
+//                    .baseUri("/oauth2/callback/*")
+//                  .and()
+//                    .userInfoEndpoint()
+//                    .userService(customOAuth2UserService)
+//                  .and()
+//                    .successHandler(oAuth2AuthenticationSuccessHandler)
+//                    .failureHandler(oAuth2AuthenticationFailureHandler)
+//                  .and().oauth2Client();
+//        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
+//
+//    @Bean
+//    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+//        return new JwtAuthenticationFilter(jwtTokenUtil);
+//    }
 }
