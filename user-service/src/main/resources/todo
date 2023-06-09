@@ -1,0 +1,2 @@
+запустит db-mangment задачу mvn install чтобы сработал liquibase
+пакет jooq сгенрированных классов поместися в модуль common

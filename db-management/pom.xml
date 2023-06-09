@@ -116,8 +116,9 @@
                             <includes>.*</includes>
                         </database>
                         <target>
-                            <packageName>social-network.generated</packageName>
-                            <directory>target/generated-sources/jooq</directory>
+                            <packageName>ru.team38.common.jooq</packageName>
+                            <directory>../common/src/main/java/</directory>
+                            <clean>true</clean>
                         </target>
                     </generator>
                 </configuration>
