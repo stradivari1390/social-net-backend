@@ -18,11 +18,11 @@
   </parent>
 
   <modules>
+    <module>db-management</module>
     <module>gateway-service</module>
     <module>user-service</module>
     <module>communications-service</module>
     <module>common</module>
-    <module>db-management</module>
   </modules>
 
   <properties>
