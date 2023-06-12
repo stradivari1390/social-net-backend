@@ -2,12 +2,15 @@ package ru.team38.userservice.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.team38.userservice.data.dto.CaptchaDto;
 import ru.team38.userservice.data.dto.LoginForm;
+import ru.team38.userservice.exceptions.LogoutFailedException;
+import ru.team38.userservice.exceptions.UnauthorizedException;
 import ru.team38.userservice.services.AuthService;
 import ru.team38.userservice.services.CaptchaService;
 
@@ -21,32 +24,22 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid LoginForm loginForm) {
-
-        JSONObject response = new JSONObject();
-
-        if (!authService.getConnection(loginForm)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try {
+            authService.getConnection(loginForm);
+            return ResponseEntity.ok().body("Уcпешная аутентификация");
+        } catch (UsernameNotFoundException | BadCredentialsException ex) {
+            throw ex;
         }
-
-        response.put("result", "Уcпешная аутентификация");
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
-
-        JSONObject response = new JSONObject();
-
-        if (!authService.getLogin()) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            authService.breakConnection();
+            return ResponseEntity.ok().body("Успешный логаут");
+        } catch (UnauthorizedException | LogoutFailedException ex) {
+            throw ex;
         }
-
-        if (!authService.breakConnection()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        response.put("result", "Успешный логаут");
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/captcha")

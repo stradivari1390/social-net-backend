@@ -1,4 +1,4 @@
-package ru.team38.userservice.exceptions.AccountRegister;
+package ru.team38.userservice.exceptions;
 
 public class PasswordMismatchException extends Exception {
     public PasswordMismatchException() {

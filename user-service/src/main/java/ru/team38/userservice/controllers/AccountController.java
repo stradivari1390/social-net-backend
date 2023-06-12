@@ -7,7 +7,7 @@ import ru.team38.userservice.data.dto.AccountDto;
 import ru.team38.userservice.data.dto.AccountSearchDto;
 import ru.team38.userservice.data.dto.PageDto;
 import ru.team38.userservice.data.dto.RegisterDto;
-import ru.team38.userservice.exceptions.AccountRegister.AccountRegisterException;
+import ru.team38.userservice.exceptions.AccountRegisterException;
 import ru.team38.userservice.services.AccountService;
 
 @RestController

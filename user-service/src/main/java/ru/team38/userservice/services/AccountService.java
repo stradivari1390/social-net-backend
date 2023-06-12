@@ -15,9 +15,9 @@ import ru.team38.userservice.data.dto.AccountSearchDto;
 import ru.team38.userservice.data.dto.PageDto;
 import ru.team38.userservice.data.dto.RegisterDto;
 import ru.team38.userservice.data.mappers.AccountMapper;
-import ru.team38.userservice.exceptions.AccountRegister.AccountExistExcepton;
-import ru.team38.userservice.exceptions.AccountRegister.AccountRegisterException;
-import ru.team38.userservice.exceptions.AccountRegister.PasswordMismatchException;
+import ru.team38.userservice.exceptions.AccountExistException;
+import ru.team38.userservice.exceptions.AccountRegisterException;
+import ru.team38.userservice.exceptions.PasswordMismatchException;
 
 import static org.jooq.impl.DSL.min;
 
@@ -57,7 +57,7 @@ public class AccountService {
         }
         Result<Record> result = dsl.select().from(account).where(account.EMAIL.eq(registerDto.getEmail())).fetch();
         if (!result.isEmpty()) {
-            throw new AccountRegisterException("User exist", new AccountExistExcepton());
+            throw new AccountRegisterException("User exist", new AccountExistException());
         }
         AccountRecord newAccountRecord = mapper.registerDto2AccountRecord(registerDto, encoder.encode(registerDto.getPassword1()));
         dsl.insertInto(account).set(newAccountRecord).execute();
