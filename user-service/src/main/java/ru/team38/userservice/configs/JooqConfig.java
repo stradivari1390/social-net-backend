@@ -32,6 +32,7 @@ public class JooqConfig {
         DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
         jooqConfiguration.set(connectionProvider());
         jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformer()));
+        jooqConfiguration.setSQLDialect(SQLDialect.POSTGRES);
         return jooqConfiguration;
     }
 

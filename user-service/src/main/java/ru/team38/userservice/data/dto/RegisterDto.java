@@ -1,9 +1,8 @@
-package ru.team38.userservice.dto;
+package ru.team38.userservice.data.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder

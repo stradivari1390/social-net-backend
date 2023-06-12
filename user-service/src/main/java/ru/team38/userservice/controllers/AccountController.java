@@ -3,10 +3,10 @@ package ru.team38.userservice.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.team38.userservice.dto.AccountDto;
-import ru.team38.userservice.dto.AccountSearchDto;
-import ru.team38.userservice.dto.PageDto;
-import ru.team38.userservice.dto.RegisterDto;
+import ru.team38.userservice.data.dto.AccountDto;
+import ru.team38.userservice.data.dto.AccountSearchDto;
+import ru.team38.userservice.data.dto.PageDto;
+import ru.team38.userservice.data.dto.RegisterDto;
 import ru.team38.userservice.exceptions.AccountRegister.AccountRegisterException;
 import ru.team38.userservice.services.AccountService;
 
