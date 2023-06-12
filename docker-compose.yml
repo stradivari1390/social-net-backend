@@ -23,24 +23,9 @@ services:
           cpus: '2'
           memory: 1G
 
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:3.11.16-management
-    restart: unless-stopped
-    # environment:
-      # - RABBITMQ_DEFAULT_USER=admin
-      # - RABBITMQ_DEFAULT_PASS=admin
-    ports:
-      - 15672:15672
-      - 5672:5672
-    volumes:
-      - data:/var/lib/rabbitmq/mnesia/
-    networks:
-      - socialnet_network
-
   frontend:
     container_name: frontend
-    image: frontend
+    image: javapro38/social-net-dock
     restart: unless-stopped
     ports:
       - 8098:80
