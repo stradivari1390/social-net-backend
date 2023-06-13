@@ -1,9 +1,16 @@
 package ru.team38.userservice.services;
 
 import lombok.RequiredArgsConstructor;
+import org.jooq.DSLContext;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import ru.team38.userservice.data.dto.LoginForm;
-import ru.team38.userservice.MockUserBase;
+import ru.team38.common.jooq.tables.Account;
+import ru.team38.common.jooq.tables.records.AccountRecord;
+import ru.team38.userservice.exceptions.LogoutFailedException;
+import ru.team38.userservice.exceptions.UnauthorizedException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,22 +18,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final MockUserBase mockUserBase;
+    private final DSLContext dslContext;
+    private AtomicBoolean login = new AtomicBoolean();
 
-    private AtomicBoolean login;
+    public void getConnection(LoginForm loginForm) throws UsernameNotFoundException, BadCredentialsException {
+        AccountRecord account = dslContext.selectFrom(Account.ACCOUNT)
+                .where(Account.ACCOUNT.EMAIL.eq(loginForm.getEmail())).fetchOne();
 
-    {
-        login = new AtomicBoolean();
+        if(account == null){
+            throw new UsernameNotFoundException("Account does not exist");
+        }
+
+        boolean isValidPassword = BCrypt.checkpw(loginForm.getPassword(), account.getPassword());
+
+        if(!isValidPassword) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        login.set(isValidPassword);
     }
 
-    public boolean getConnection(LoginForm loginForm) {
-        login.set(true);
-        return mockUserBase.isValidUser(loginForm);
-    }
-
-    public boolean breakConnection() {
+    public void breakConnection() throws UnauthorizedException, LogoutFailedException {
+        if (!getLogin()) {
+            throw new UnauthorizedException("User is not logged in");
+        }
         login.set(false);
-        return true;
+        if (getLogin()) {
+            throw new LogoutFailedException("Logout failed");
+        }
     }
 
     public boolean getLogin() {
