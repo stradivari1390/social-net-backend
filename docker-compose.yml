@@ -33,19 +33,23 @@ services:
       - socialnet_network
 
   user-service:
-    build:
-      context: ./social-net-backend/user-service
+    container_name: user-svc
+    image: javapro38/soc-net-user-svc
     depends_on:
       - postgres
       # - rabbitmq
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "8081:8081"
     networks:
       - socialnet_network
 
   communications-service:
-    build:
-      context: ./social-net-backend/communications-service
+    container_name: comm-svc
+    image: javapro38/soc-net-comm-svc
     depends_on:
       - postgres
       # - rabbitmq
@@ -55,8 +59,8 @@ services:
       - socialnet_network
 
   gateway-service:
-    build:
-      context: ./social-net-backend/gateway-service
+    container_name: gate-svc
+    image: javapro38/soc-net-gate-svc
     depends_on:
       - user-service
       # - communications-service

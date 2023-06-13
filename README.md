@@ -4,7 +4,7 @@
 
 [Ссылка на сервис](./common/README.md)
 
-## communication-service
+## communications-service
 
 [Ссылка на сервис](./communications-service/README.md)
 
