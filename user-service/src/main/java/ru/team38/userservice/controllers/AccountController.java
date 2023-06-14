@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.AccountSearchDto;
 import ru.team38.common.dto.PageDto;
-import ru.team38.common.dto.RegisterDto;
-import ru.team38.userservice.exceptions.AccountRegisterException;
 import ru.team38.userservice.services.AccountService;
 
 @RestController
@@ -34,11 +32,5 @@ public class AccountController {
     @GetMapping("/search")
     public ResponseEntity<AccountDto> findAccount(AccountSearchDto accountSearch, PageDto page) {
         return ResponseEntity.ok(accountService.findAccount(accountSearch, page));
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) throws AccountRegisterException {
-        accountService.register(registerDto);
-        return ResponseEntity.ok("");
     }
 }

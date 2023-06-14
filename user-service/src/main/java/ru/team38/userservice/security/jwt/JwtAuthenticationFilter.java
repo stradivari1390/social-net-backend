@@ -1,74 +1,64 @@
 package ru.team38.userservice.security.jwt;
 
-import ch.qos.logback.classic.Logger;
-
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
+@Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JWTUtil jwtTokenUtil;
-    private final Logger log = (Logger) LoggerFactory.getLogger(getClass());
-
-    public JwtAuthenticationFilter(JWTUtil jwtTokenUtil) {
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, @NonNull HttpServletResponse httpServletResponse,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
         String token = null;
-        String username = null;
-        Cookie[] cookies = httpServletRequest.getCookies();
+        String email = null;
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("token")) {
-                    token = cookie.getValue();
-                    try {
-                        username = jwtTokenUtil.getUsernameFromToken(token);
-                    } catch (ExpiredJwtException e) {
-                        httpServletResponse.sendRedirect("/signin");
-                        return;
-                    }
-                }
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
-                    if (jwtTokenUtil.validateToken(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authenticationToken =
-                                new UsernamePasswordAuthenticationToken(
-                                        userDetails, null, userDetails.getAuthorities()
-                                );
-                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                        log.debug("Username: {}, Token: {}", username, token);
-                        log.debug("Authentication before setting SecurityContextHolder: {}", SecurityContextHolder.getContext().getAuthentication());
-                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                        log.debug("Authentication after setting SecurityContextHolder: {}", SecurityContextHolder.getContext().getAuthentication());
-                    } else {
-                        log.debug("Username: {}, Token: {}", username, token);
-                        log.debug("Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
-                        httpServletResponse.sendRedirect("/logout");
-                        return;
-                    }
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                token = cookie.getValue();
+                email = jwtService.getUsername(token);
+            }
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
+                if (jwtService.isTokenValid(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         }
-        if (httpServletRequest.getRequestURI().equals("/signup")) {
-            SecurityContextHolder.clearContext();
-        }
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
-    }   // ToDO: Refactor method!
+        filterChain.doFilter(request, response);
+    }
 }
