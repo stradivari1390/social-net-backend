@@ -2,8 +2,8 @@ package ru.team38.userservice;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.team38.userservice.data.dto.LoginForm;
-import ru.team38.userservice.data.dto.RegisterDto;
+import ru.team38.common.dto.LoginForm;
+import ru.team38.common.dto.RegisterDto;
 
 import java.util.HashMap;
 import java.util.Map;

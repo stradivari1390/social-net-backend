@@ -45,11 +45,6 @@
             <artifactId>jooq-meta</artifactId>
             <version>${jooq.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-codegen</artifactId>
-            <version>${jooq.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -62,6 +57,12 @@
             <version>${liquibase-core.version}</version>
         </dependency>
         <!--DataBase-->
+
+        <dependency>
+            <groupId>socialnet.team38</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

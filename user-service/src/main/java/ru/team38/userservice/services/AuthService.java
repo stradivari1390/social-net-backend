@@ -6,7 +6,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import ru.team38.userservice.data.dto.LoginForm;
+import ru.team38.common.dto.LoginForm;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.userservice.exceptions.LogoutFailedException;

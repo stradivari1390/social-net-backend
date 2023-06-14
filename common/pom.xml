@@ -14,9 +14,21 @@
     <name>common</name>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson-bom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta-validation.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
         </dependency>
     </dependencies>
 

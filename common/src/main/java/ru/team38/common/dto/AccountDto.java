@@ -1,4 +1,4 @@
-package ru.team38.userservice.data.dto;
+package ru.team38.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

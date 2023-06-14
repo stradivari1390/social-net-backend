@@ -37,6 +37,7 @@ spring:
                 replenishRate: 2
                 redis-rate-limiter.replenishRate: 10
                 redis-rate-limiter.burstCapacity: 20
-
-logging:
-  config: classpath:logback-spring.xml
+user-service:
+  url: http://localhost:8081
+cors:
+  origin: http://localhost:8098

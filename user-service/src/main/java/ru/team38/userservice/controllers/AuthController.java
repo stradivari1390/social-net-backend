@@ -7,14 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import ru.team38.userservice.data.dto.CaptchaDto;
-import ru.team38.userservice.data.dto.LoginForm;
+import ru.team38.common.dto.CaptchaDto;
+import ru.team38.common.dto.LoginForm;
 import ru.team38.userservice.exceptions.LogoutFailedException;
 import ru.team38.userservice.exceptions.UnauthorizedException;
 import ru.team38.userservice.services.AuthService;
 import ru.team38.userservice.services.CaptchaService;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
