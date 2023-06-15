@@ -38,7 +38,7 @@ public abstract class AccountMapper {
     }
 
     protected AccountDto.StatusCode toStatusCode(int value) {
-        return AccountDto.StatusCode.values()[value];
+        return AccountDto.StatusCode.values()[0];
     }
 
     protected int fromStatusCode(AccountDto.StatusCode value) {

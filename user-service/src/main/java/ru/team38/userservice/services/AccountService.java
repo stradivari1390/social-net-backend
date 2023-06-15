@@ -2,20 +2,25 @@ package ru.team38.userservice.services;
 
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.mapstruct.factory.Mappers;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.team38.common.dto.*;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
-import ru.team38.common.dto.AccountDto;
-import ru.team38.common.dto.AccountSearchDto;
-import ru.team38.common.dto.PageDto;
 import ru.team38.userservice.data.mappers.AccountMapper;
+import ru.team38.userservice.exceptions.AccountExistException;
+import ru.team38.userservice.exceptions.AccountRegisterException;
+import ru.team38.userservice.exceptions.PasswordMismatchException;
+
 import static org.jooq.impl.DSL.min;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-
     private final DSLContext dsl;
     private final Account account = Account.ACCOUNT;
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
@@ -37,7 +42,22 @@ public class AccountService {
         dsl.delete(account).where(account.ID.eq(minId)).execute();
     }
 
-    public AccountDto findAccount(AccountSearchDto accountSearchDto, PageDto page) {
-        return new AccountDto();
+    public AccountResultSearchDto findAccount(AccountSearchDto accountSearch, PageDto page) {
+        AccountResultSearchDto accountResultSearch = new AccountResultSearchDto();
+
+        Result<Record> records = dsl.select().from(account)
+                .where(account.FIRST_NAME.eq(accountSearch.getFirstName()),
+                        account.LAST_NAME.eq(accountSearch.getLastName()))
+                .limit(page.getSize()).fetch();
+
+        records.forEach(account -> {
+            accountResultSearch.setAccount(mapper
+                    .accountRecord2AccountDto((AccountRecord) account));
+        });
+
+        page.setSize(records.size());
+        accountResultSearch.setPageDto(page);
+
+        return accountResultSearch;
     }
 }
