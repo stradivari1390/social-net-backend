@@ -92,7 +92,7 @@
         <dependency>
             <groupId>cn.apiclub.tool</groupId>
             <artifactId>simplecaptcha</artifactId>
-            <version>1.2.2</version>
+            <version>${simplecaptcha.version}</version>
         </dependency>
         <!--CAPTCHA-->
 
@@ -104,4 +104,27 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${build-helper-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>../common/src/main/java/ru/team38/common/jooq/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

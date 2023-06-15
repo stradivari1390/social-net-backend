@@ -3,8 +3,8 @@ package ru.team38.userservice.data.mappers;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import ru.team38.common.jooq.tables.records.AccountRecord;
-import ru.team38.userservice.data.dto.AccountDto;
-import ru.team38.userservice.data.dto.RegisterDto;
+import ru.team38.common.dto.AccountDto;
+import ru.team38.common.dto.RegisterDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

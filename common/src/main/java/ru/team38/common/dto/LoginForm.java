@@ -1,4 +1,5 @@
-package ru.team38.userservice.data.dto;
+package ru.team38.common.dto;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

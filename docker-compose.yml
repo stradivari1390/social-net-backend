@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: socialnet
     ports:
-      - 5433:5432
+      - "5433:5432"
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
       - data:/var/lib/postgresql/data
@@ -28,7 +28,7 @@ services:
     image: javapro38/social-net-dock
     restart: unless-stopped
     ports:
-      - 8098:80
+      - "8098:80"
     networks:
       - socialnet_network
 
@@ -37,9 +37,9 @@ services:
       context: ./social-net-backend/user-service
     depends_on:
       - postgres
-      - rabbitmq
+      # - rabbitmq
     ports:
-      - 8081:8081
+      - "8081:8081"
     networks:
       - socialnet_network
 
@@ -48,9 +48,9 @@ services:
       context: ./social-net-backend/communications-service
     depends_on:
       - postgres
-      - rabbitmq
+      # - rabbitmq
     ports:
-      - 8082:8082
+      - "8082:8082"
     networks:
       - socialnet_network
 
@@ -59,9 +59,9 @@ services:
       context: ./social-net-backend/gateway-service
     depends_on:
       - user-service
-      - communications-service
+      # - communications-service
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
       - socialnet_network
 #    environment:
