@@ -2,13 +2,13 @@ package ru.team38.userservice.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
+import ru.team38.userservice.exceptions.CaptchaCreationException;
 import ru.team38.userservice.exceptions.LogoutFailedException;
 import ru.team38.userservice.exceptions.UnauthorizedException;
 import ru.team38.userservice.services.AuthService;
@@ -45,14 +45,11 @@ public class AuthController {
 
     @GetMapping("/captcha")
     public ResponseEntity<CaptchaDto> getCaptcha() {
-        if (!authService.getLogin()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         try {
             CaptchaDto captcha = captchaService.createCaptcha();
             return ResponseEntity.ok().body(captcha);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        } catch (CaptchaCreationException e) {
+            throw e;
         }
     }
 }

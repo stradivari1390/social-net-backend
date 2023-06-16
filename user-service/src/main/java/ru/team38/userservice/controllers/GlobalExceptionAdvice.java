@@ -6,10 +6,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.team38.userservice.exceptions.AccountExistException;
-import ru.team38.userservice.exceptions.AccountRegisterException;
-import ru.team38.userservice.exceptions.LogoutFailedException;
-import ru.team38.userservice.exceptions.UnauthorizedException;
+import ru.team38.userservice.exceptions.*;
 
 @ControllerAdvice
 public class GlobalExceptionAdvice {
@@ -45,5 +42,11 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<String> logoutFailedHandler(LogoutFailedException ex) {
         ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Logout failed.");
+    }
+
+    @ExceptionHandler(CaptchaCreationException.class)
+    public ResponseEntity<String> captchaCreationFailedHandler(CaptchaCreationException ex) {
+        ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Captcha creation failed.");
     }
 }
