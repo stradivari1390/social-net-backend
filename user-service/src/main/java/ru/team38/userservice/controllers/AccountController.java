@@ -9,8 +9,6 @@ import ru.team38.common.dto.AccountSearchDto;
 import ru.team38.common.dto.PageDto;
 import ru.team38.userservice.services.AccountService;
 
-import java.security.Principal;
-
 @RestController
 @RequestMapping("/api/v1/account")
 @RequiredArgsConstructor
@@ -18,8 +16,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping("/me")
-    public ResponseEntity<AccountDto> getAccount(Principal principal) {
-        return ResponseEntity.ok(accountService.getAccount(principal));
+    public ResponseEntity<AccountDto> getAccount() {
+        return ResponseEntity.ok(accountService.getAuthenticatedAccount());
     }
 
     @PutMapping("/me")
@@ -28,8 +26,9 @@ public class AccountController {
     }
 
     @DeleteMapping("/me")
-    public void deleteAccount() {
+    public ResponseEntity<String> deleteAccount() {
         accountService.deleteAccount();
+        return ResponseEntity.ok("Аккаунт удален");
     }
 
     @GetMapping("/search")

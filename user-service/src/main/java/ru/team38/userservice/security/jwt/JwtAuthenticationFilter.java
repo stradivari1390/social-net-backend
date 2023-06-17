@@ -41,7 +41,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 token = cookie.getValue();
-                email = jwtService.getUsername(token);
+                try {
+                    email = jwtService.getUsername(token);
+                } catch (io.jsonwebtoken.ExpiredJwtException e) {
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                    filterChain.doFilter(request, response);
+                    return;
+                }
             }
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);

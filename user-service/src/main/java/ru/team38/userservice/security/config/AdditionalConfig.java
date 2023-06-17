@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import ru.team38.userservice.repositories.AccountRepository;
 import ru.team38.common.jooq.tables.records.AccountRecord;
+import ru.team38.userservice.data.repositories.AccountRepository;
+
 import java.util.ArrayList;
 
 @Configuration
@@ -22,23 +22,20 @@ public class AdditionalConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-                AccountRecord account = accountRepository.getAccountByEmail(email);
-                if (account == null) {
-                    throw new UsernameNotFoundException("Account does not exist");
-                }
-                return new User(
-                        account.getEmail(),
-                        account.getPassword(),
-                        account.getStatusCode() == 1,
-                        true,
-                        true,
-                        account.getIsBlocked(),
-                        new ArrayList<>()
-                );
+        return email -> {
+            AccountRecord account = accountRepository.getAccountByEmail(email);
+            if (account == null) {
+                throw new UsernameNotFoundException("Account does not exist");
             }
+            return new User(
+                    account.getEmail(),
+                    account.getPassword(),
+                    true,
+                    true,
+                    true,
+                    account.getIsBlocked(),
+                    new ArrayList<>()
+            );
         };
     }
 

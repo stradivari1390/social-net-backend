@@ -63,7 +63,7 @@ services:
     image: javapro38/soc-net-gate-svc
     depends_on:
       - user-service
-      # - communications-service
+      # - communications-security_service
     ports:
       - "8080:8080"
     networks:
