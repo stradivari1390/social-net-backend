@@ -5,10 +5,10 @@ FROM openjdk:17-jdk-slim
 ARG JAR_FILE=target/*.jar
 
 # Копируем JAR-файл приложения в контейнер
-COPY ${JAR_FILE} gateway-service.jar
+COPY ${JAR_FILE} communications-service.jar
 
 # Указываем команду для запуска приложения
-ENTRYPOINT ["java", "-jar", "gateway-service.jar"]
+ENTRYPOINT ["java", "-jar", "communications-service.jar"]
 
 # Сообщаем Docker, что контейнер прослушивает трафик на указанном порту
-EXPOSE 8080
+EXPOSE 8082
