@@ -2,29 +2,20 @@ package ru.team38.userservice.services;
 
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
 import org.mapstruct.factory.Mappers;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.AccountSearchDto;
 import ru.team38.common.dto.PageDto;
-import ru.team38.common.dto.RegisterDto;
 import ru.team38.userservice.data.mappers.AccountMapper;
-import ru.team38.userservice.exceptions.AccountExistException;
-import ru.team38.userservice.exceptions.AccountRegisterException;
-import ru.team38.userservice.exceptions.PasswordMismatchException;
-
 import static org.jooq.impl.DSL.min;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-    private final PasswordEncoder encoder;
+
     private final DSLContext dsl;
     private final Account account = Account.ACCOUNT;
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
@@ -48,18 +39,5 @@ public class AccountService {
 
     public AccountDto findAccount(AccountSearchDto accountSearchDto, PageDto page) {
         return new AccountDto();
-    }
-
-    @Transactional
-    public void register(RegisterDto registerDto) throws AccountRegisterException {
-        if (!registerDto.getPassword1().equals(registerDto.getPassword2())) {
-            throw new AccountRegisterException("Passwords mismatch", new PasswordMismatchException());
-        }
-        Result<Record> result = dsl.select().from(account).where(account.EMAIL.eq(registerDto.getEmail())).fetch();
-        if (!result.isEmpty()) {
-            throw new AccountRegisterException("User exist", new AccountExistException());
-        }
-        AccountRecord newAccountRecord = mapper.registerDto2AccountRecord(registerDto, encoder.encode(registerDto.getPassword1()));
-        dsl.insertInto(account).set(newAccountRecord).execute();
     }
 }
