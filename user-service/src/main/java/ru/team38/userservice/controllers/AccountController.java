@@ -32,4 +32,8 @@ public class AccountController {
     public ResponseEntity<AccountResultSearchDto> findAccount(AccountSearchDto accountSearch, PageDto page) {
         return ResponseEntity.ok(accountService.findAccount(accountSearch, page));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountDto> getAccountById(@PathVariable long id) {
+        return ResponseEntity.ok(accountService.getAccountById(id));
+    }
 }

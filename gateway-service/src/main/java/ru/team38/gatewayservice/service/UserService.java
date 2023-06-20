@@ -59,4 +59,13 @@ public class UserService {
         ResponseEntity<AccountDto> responseEntity = userServiceClient.updateAccount(account);
         return responseEntity.getBody();
     }
+    public AccountDto getAccountById(long id) {
+        try {
+            ResponseEntity<AccountDto> responseEntity = userServiceClient.getAccountById(id);
+            return responseEntity.getBody();
+        } catch (FeignException e) {
+            log.error(e.contentUTF8());
+            throw new RuntimeException(e.contentUTF8(), e);
+        }
+    }
 }

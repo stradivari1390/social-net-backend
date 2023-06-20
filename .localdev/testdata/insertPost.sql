@@ -1,0 +1,26 @@
+INSERT INTO socialnet.post (
+    is_deleted,
+    time,
+    time_changed,
+    author_id,
+    title,
+    type,
+    post_text,
+    is_blocked,
+    comments_count,
+    tags,
+    like_amount,
+    my_like,
+    image_path,
+    publish_date)
+VALUES
+    (false, current_timestamp, current_timestamp, 1000, 'Удивительные открытия в науке', 'POSTED', 'Новые достижения в области науки', false, 0, ARRAY['наука', 'открытия'], 0, false, 'путь_к_изображению1.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1001, 'Путешествие в неизведанные места', 'POSTED', 'Захватывающие впечатления от моего последнего путешествия', false, 0, ARRAY['путешествия', 'природа'], 0, false, 'путь_к_изображению2.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1002, 'Вдохновение на каждый день', 'POSTED', 'Источники вдохновения и мотивации', false, 0, ARRAY['вдохновение', 'мотивация'], 0, false, 'путь_к_изображению3.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1003, 'Здоровый образ жизни', 'POSTED', 'Советы по поддержанию здорового образа жизни', false, 0, ARRAY['здоровье', 'фитнес'], 0, false, 'путь_к_изображению4.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1004, 'Искусство в каждой детали', 'POSTED', 'Уникальные работы искусства', false, 0, ARRAY['искусство', 'творчество'], 0, false, 'путь_к_изображению5.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1005, 'Интересные факты о природе', 'POSTED', 'Удивительные открытия и явления природы', false, 0, ARRAY['природа', 'факты'], 0, false, 'путь_к_изображению6.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1006, 'Кулинарные эксперименты', 'POSTED', 'Новые рецепты и гастрономические открытия', false, 0, ARRAY['кулинария', 'рецепты'], 0, false, 'путь_к_изображению7.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1007, 'Мир моды и стиля', 'POSTED', 'Тенденции моды и советы по стилю', false, 0, ARRAY['мода', 'стиль'], 0, false, 'путь_к_изображению8.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1008, 'Интересные книги для чтения', 'POSTED', 'Рекомендации по чтению увлекательных книг', false, 0, ARRAY['книги', 'литература'], 0, false, 'путь_к_изображению9.jpg', current_timestamp),
+    (false, current_timestamp, current_timestamp, 1009, 'Новые технологии в мире', 'POSTED', 'Самые передовые разработки и технологии', false, 0, ARRAY['технологии', 'инновации'], 0, false, 'путь_к_изображению10.jpg', current_timestamp);
