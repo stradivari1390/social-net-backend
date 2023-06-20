@@ -1,24 +1,32 @@
 stages:
   - build
   - deploy
-variables:
-  POSTGRES_USER: $postgres_user
-  POSTGRES_PASSWORD: $postgres_password
-  POSTGRES_DB: $postgres_db
+
 build:
-  stage: build
   image: maven:3.8.3-openjdk-17
   services:
-    - name: postgres:latest
+    - name: postgres:15
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+    POSTGRES_USER: $postgres_user
+    POSTGRES_PASSWORD: $postgres_password
+    POSTGRES_DB: $postgres_db
+    POSTGRES_HOST_AUTH_METHOD: trust
+  cache:
+    paths:
+      - .m2/repository
+  stage: build
   script:
-    - echo "Job ID - $CI_JOB_ID"
-    - echo "Pipeline ID - $CI_PIPELINE_ID"
-    - mvn clean install
+    - mvn $MAVEN_CLI_OPTS clean install
+    - echo "job $CI_JOB_ID was successful"
+    - echo "build number $CI_PIPELINE_ID"
+
 deploy:
   stage: deploy
   script:
-    - echo "Job ID - $CI_JOB_ID"
-    - echo "Pipeline ID - $CI_PIPELINE_ID"
+    - echo "job $CI_JOB_ID was successful"
+    - echo "build $CI_PIPELINE_ID deployed"
   only:
     - master
     - develop
