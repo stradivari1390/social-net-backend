@@ -20,4 +20,7 @@ public interface UserServiceClient {
 
     @GetMapping("/api/v1/auth/captcha")
     ResponseEntity<CaptchaDto> getCaptcha();
+
+    @GetMapping("/api/v1/account/me")
+    ResponseEntity<String> getAccount();
 }

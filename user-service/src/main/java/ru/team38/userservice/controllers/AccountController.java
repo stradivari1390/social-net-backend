@@ -3,9 +3,13 @@ package ru.team38.userservice.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.team38.common.dto.*;
-import ru.team38.userservice.exceptions.AccountRegisterException;
+import ru.team38.common.dto.AccountDto;
+import ru.team38.common.dto.AccountResultSearchDto;
+import ru.team38.common.dto.AccountSearchDto;
+import ru.team38.common.dto.PageDto;
 import ru.team38.userservice.services.AccountService;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/account")
@@ -14,8 +18,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping("/me")
-    public ResponseEntity<AccountDto> getAccount() {
-        return ResponseEntity.ok(accountService.getAccount());
+    public ResponseEntity<AccountDto> getAccount(Principal principal) {
+        return ResponseEntity.ok(accountService.getAccount(principal));
     }
 
     @PutMapping("/me")

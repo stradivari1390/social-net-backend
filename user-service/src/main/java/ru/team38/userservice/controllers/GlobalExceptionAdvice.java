@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.team38.userservice.exceptions.*;
+import ru.team38.userservice.exceptions.status.*;
 
 @ControllerAdvice
 public class GlobalExceptionAdvice {
@@ -48,5 +49,11 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<String> captchaCreationFailedHandler(CaptchaCreationException ex) {
         ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Captcha creation failed.");
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> badRequestHandler(BadRequestException ex) {
+        ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 }

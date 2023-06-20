@@ -5,16 +5,17 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.mapstruct.factory.Mappers;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.team38.common.dto.*;
+import ru.team38.common.dto.AccountDto;
+import ru.team38.common.dto.AccountResultSearchDto;
+import ru.team38.common.dto.AccountSearchDto;
+import ru.team38.common.dto.PageDto;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.userservice.data.mappers.AccountMapper;
-import ru.team38.userservice.exceptions.AccountExistException;
-import ru.team38.userservice.exceptions.AccountRegisterException;
-import ru.team38.userservice.exceptions.PasswordMismatchException;
+import ru.team38.userservice.exceptions.status.BadRequestException;
+
+import java.security.Principal;
 
 import static org.jooq.impl.DSL.min;
 
@@ -25,10 +26,9 @@ public class AccountService {
     private final Account account = Account.ACCOUNT;
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
 
-    public AccountDto getAccount() {
-        Integer minId = dsl.select(min(account.ID)).from(account).fetchOne().into(Integer.class);
-        return dsl.select().from(account).where(account.ID.eq(minId)).fetchOptional()
-                .orElseThrow(() -> new RuntimeException("no user"))
+    public AccountDto getAccount(Principal principal) {
+        return dsl.select().from(account).where(account.EMAIL.eq(principal.getName())).fetchOptional()
+                .orElseThrow(() -> new BadRequestException("user not found"))
                 .map(record -> mapper.accountRecord2AccountDto((AccountRecord) record));
     }
 
