@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.team38.common.dto.AccountDto;
+import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
 import ru.team38.gatewayservice.service.UserService;
 
@@ -30,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/api/v1/auth/captcha")
-    public ResponseEntity<?> getCaptcha() {
+    public CaptchaDto getCaptcha() {
         log.info("Executing getCaptcha request");
         return userService.getCaptcha();
     }
@@ -42,7 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/api/v1/account/me")
-    public ResponseEntity<?> getAccount() {
+    public AccountDto getAccount() {
         log.info("Executing getAccount request");
         return userService.getAccount();
     }

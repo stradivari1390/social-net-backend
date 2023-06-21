@@ -1,13 +1,11 @@
 package ru.team38.gatewayservice.config;
 
 import feign.RequestInterceptor;
-import feign.codec.ErrorDecoder;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.team38.gatewayservice.exceptions.ResponseException;
 
 @Configuration
 public class FeignConfig {
@@ -29,10 +27,4 @@ public class FeignConfig {
             }
         };
     }
-
-    @Bean
-    public ErrorDecoder errorDecoder() {
-        return (msg, response) -> new ResponseException(msg, response);
-    }
-
 }
