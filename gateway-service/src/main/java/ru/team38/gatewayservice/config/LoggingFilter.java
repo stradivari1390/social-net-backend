@@ -22,6 +22,7 @@ public class LoggingFilter extends OncePerRequestFilter {
     public LoggingFilter() {
         urlToServiceNameMap.put("/api/v1/auth.*", "user-service");
         urlToServiceNameMap.put("/api/v1/friends.*", "user-service");
+        urlToServiceNameMap.put("/api/v1/account.*", "user-service");
     }
 
     @Override

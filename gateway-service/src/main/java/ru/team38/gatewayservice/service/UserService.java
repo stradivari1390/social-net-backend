@@ -2,11 +2,16 @@ package ru.team38.gatewayservice.service;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.team38.common.dto.AccountDto;
+import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
 import ru.team38.gatewayservice.clients.UserServiceClient;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -17,6 +22,7 @@ public class UserService {
         try {
             return userServiceClient.login(loginForm);
         } catch (FeignException e) {
+            log.error(e.contentUTF8());
             return ResponseEntity.status(e.status()).body(e.contentUTF8());
         }
     }
@@ -25,15 +31,21 @@ public class UserService {
         try {
             return userServiceClient.logout();
         } catch (FeignException e) {
+            log.error(e.contentUTF8());
             return ResponseEntity.status(e.status()).body(e.contentUTF8());
         }
     }
 
-    public ResponseEntity<?> getCaptcha() {
+    public CaptchaDto getCaptcha() {
         try {
-            return userServiceClient.getCaptcha();
+            ResponseEntity<CaptchaDto> responseEntity = userServiceClient.getCaptcha();
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                return responseEntity.getBody();
+            } else {
+                throw new RuntimeException("Failed to get captcha");
+            }
         } catch (FeignException e) {
-            return ResponseEntity.status(e.status()).body(e.contentUTF8());
+            throw new RuntimeException(e.contentUTF8(), e);
         }
     }
 
@@ -41,15 +53,18 @@ public class UserService {
         try {
             return userServiceClient.getIncomingFriendRequests();
         } catch (FeignException e) {
+            log.error(e.contentUTF8());
             return ResponseEntity.status(e.status()).body(e.contentUTF8());
         }
     }
 
-    public ResponseEntity<?> getAccount() {
+    public AccountDto getAccount() {
         try {
-            return userServiceClient.getAccount();
+            ResponseEntity<AccountDto> responseEntity = userServiceClient.getAccount();
+            return responseEntity.getBody();
         } catch (FeignException e) {
-            return ResponseEntity.status(e.status()).body(e.contentUTF8());
+            log.error(e.contentUTF8());
+            throw new RuntimeException(e.contentUTF8(), e);
         }
     }
 }

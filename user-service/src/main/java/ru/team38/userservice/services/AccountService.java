@@ -30,7 +30,7 @@ public class AccountService {
     private final Account account = Account.ACCOUNT;
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
 
-    public AccountDto getAuthenticatedAccount() {
+    public AccountDto getAuthenticatedAccount() throws UnauthorizedException, DataAccessException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication.getPrincipal() instanceof UserDetails currentUser)) {
             throw new UnauthorizedException("User is not authenticated");
