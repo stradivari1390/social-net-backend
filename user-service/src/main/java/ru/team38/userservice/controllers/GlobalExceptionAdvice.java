@@ -51,6 +51,12 @@ public class GlobalExceptionAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Captcha creation failed.");
     }
 
+    @ExceptionHandler(FriendsServiceException.class)
+    public ResponseEntity<String> friendsServiceExceptionHandler(FriendsServiceException ex) {
+        ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getLocalizedMessage());
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> badRequestHandler(BadRequestException ex) {
         ex.printStackTrace();

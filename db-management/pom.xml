@@ -59,9 +59,14 @@
         <!--DataBase-->
 
         <dependency>
-            <groupId>socialnet.team38</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson-bom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta-validation.version}</version>
         </dependency>
     </dependencies>
 
@@ -118,7 +123,7 @@
                         </database>
                         <target>
                             <packageName>ru.team38.common.jooq</packageName>
-                            <directory>../common/src/main/java/</directory>
+                            <directory>../common/src/main/java</directory>
                             <clean>true</clean>
                         </target>
                     </generator>

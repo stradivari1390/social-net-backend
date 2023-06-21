@@ -7,7 +7,7 @@
     <changeSet id="create-account-table" author="Stanislav Romanov">
         <createTable tableName="account" schemaName="socialnet" remarks="Таблица для сущности аккаунта пользователя">
             <!-- table columns -->
-            <column autoIncrement="true" name="id" type="INTEGER" remarks="Уникальный идентификатор для аккаунта">
+            <column autoIncrement="true" name="id" type="BIGINT" remarks="Уникальный идентификатор для аккаунта">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="account_pkey"/>
             </column>
             <column name="is_deleted" type="BOOLEAN" remarks="Булевый флаг, указывающий, удалена ли учетная запись">
@@ -35,9 +35,6 @@
             </column>
             <column name="country" type="TEXT" remarks="Страна владельца учетной записи">
             </column>
-            <column name="status_code" type="INTEGER" remarks="Код статуса учетной записи (активная - 1, неактивная - 0, т.д.)">
-                <constraints nullable="false"/>
-            </column>
             <column name="reg_date" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время регистрации учетной записи">
                 <constraints nullable="false"/>
             </column>
@@ -55,7 +52,7 @@
             <column name="is_blocked" type="BOOLEAN" remarks="Булевый флаг, указывающий, заблокирован ли аккаунт">
                 <constraints nullable="false"/>
             </column>
-            <column name="photo_id" type="INTEGER" remarks="Уникальный идентификатор фото профайла владельца учетной записи">
+            <column name="photo_id" type="BIGINT" remarks="Уникальный идентификатор фото профайла владельца учетной записи">
             </column>
             <column name="photo_name" type="TEXT" remarks="Название фото профайла владельца учетной записи">
             </column>

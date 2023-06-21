@@ -1,6 +1,5 @@
 package ru.team38.common.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,15 +35,4 @@ public class AccountDto {
     private String photoName;
     private ZonedDateTime createdOn;
     private ZonedDateTime updatedOn;
-
-    public enum StatusCode {
-        @JsonProperty("StatusCode.FRIEND")
-        FRIEND(0);
-
-        public final int num;
-
-        StatusCode(int num) {
-            this.num = num;
-        }
-    }
 }

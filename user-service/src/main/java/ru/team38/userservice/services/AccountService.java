@@ -4,8 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.exception.DataAccessException;
 import org.mapstruct.factory.Mappers;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.AccountResultSearchDto;
 import ru.team38.common.dto.AccountSearchDto;
@@ -13,33 +18,45 @@ import ru.team38.common.dto.PageDto;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.userservice.data.mappers.AccountMapper;
-import ru.team38.userservice.exceptions.status.BadRequestException;
-
-import java.security.Principal;
+import ru.team38.userservice.exceptions.status.UnauthorizedException;
 
 import static org.jooq.impl.DSL.min;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountService {
     private final DSLContext dsl;
     private final Account account = Account.ACCOUNT;
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
 
-    public AccountDto getAccount(Principal principal) {
-        return dsl.select().from(account).where(account.EMAIL.eq(principal.getName())).fetchOptional()
-                .orElseThrow(() -> new BadRequestException("user not found"))
-                .map(record -> mapper.accountRecord2AccountDto((AccountRecord) record));
+    public AccountDto getAuthenticatedAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication.getPrincipal() instanceof UserDetails currentUser)) {
+            throw new UnauthorizedException("User is not authenticated");
+        }
+        String email = currentUser.getUsername();
+
+        AccountRecord accountRecord = dsl.selectFrom(account)
+                .where(account.EMAIL.eq(email))
+                .fetchOne();
+
+        if (accountRecord == null) {
+            throw new DataAccessException("No account found with email: " + email);
+        }
+
+        return mapper.accountRecordToAccountDto(accountRecord);
     }
 
     public AccountDto updateAccount(AccountDto accountDto) {
-        AccountRecord updateRecord = mapper.accountDto2AccountRecord(accountDto);
-        return mapper.accountRecord2AccountDto(updateRecord);
+        AccountRecord updateRecord = mapper.accountDtoToAccountRecord(accountDto);
+        updateRecord.store();
+        return mapper.accountRecordToAccountDto(updateRecord);
     }
 
     public void deleteAccount() {
-        Integer minId = dsl.select(min(account.ID)).from(account).fetchOne().into(Integer.class);
-        dsl.delete(account).where(account.ID.eq(minId)).execute();
+        Long minId = dsl.select(min(account.ID)).from(account).fetchOneInto(Long.class);
+        dsl.deleteFrom(account).where(account.ID.eq(minId)).execute();
     }
 
     public AccountResultSearchDto findAccount(AccountSearchDto accountSearch, PageDto page) {
@@ -50,10 +67,7 @@ public class AccountService {
                         account.LAST_NAME.eq(accountSearch.getLastName()))
                 .limit(page.getSize()).fetch();
 
-        records.forEach(account -> {
-            accountResultSearch.setAccount(mapper
-                    .accountRecord2AccountDto((AccountRecord) account));
-        });
+        records.forEach(acc -> accountResultSearch.setAccount(mapper.accountRecordToAccountDto((AccountRecord) acc)));
 
         page.setSize(records.size());
         accountResultSearch.setPageDto(page);

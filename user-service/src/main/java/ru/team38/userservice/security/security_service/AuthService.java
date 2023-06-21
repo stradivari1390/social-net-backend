@@ -1,18 +1,19 @@
-package ru.team38.userservice.services;
+package ru.team38.userservice.security.security_service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,14 +27,19 @@ import ru.team38.common.dto.LoginForm;
 import ru.team38.common.dto.RegisterDto;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.userservice.data.mappers.AccountMapper;
-import ru.team38.userservice.exceptions.*;
-import ru.team38.userservice.repositories.AccountRepository;
+import ru.team38.userservice.data.repositories.AccountRepository;
+import ru.team38.userservice.exceptions.AccountExistException;
+import ru.team38.userservice.exceptions.AccountRegisterException;
+import ru.team38.userservice.exceptions.LogoutFailedException;
+import ru.team38.userservice.exceptions.PasswordMismatchException;
+import ru.team38.userservice.exceptions.status.UnauthorizedException;
 import ru.team38.userservice.security.jwt.JwtService;
 import ru.team38.userservice.security.jwt.TokenBlacklistService;
 
 import javax.security.auth.login.FailedLoginException;
 import java.util.ArrayList;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -68,7 +74,7 @@ public class AuthService {
         UserDetails userDetails = new User(
                 newAccountRecord.getEmail(),
                 newAccountRecord.getPassword(),
-                newAccountRecord.getStatusCode() == 1,
+                true,
                 true,
                 true,
                 newAccountRecord.getIsBlocked(),
@@ -77,36 +83,47 @@ public class AuthService {
         issueToken(userDetails, response);
     }
 
-    public void login(
-            LoginForm loginForm,
-            HttpServletResponse response
-    ) throws UsernameNotFoundException, BadCredentialsException, FailedLoginException {
-        if (getLogin()) {
-            throw new FailedLoginException("User already logged in");
+    public void login(LoginForm loginForm,
+                      HttpServletResponse response) throws UsernameNotFoundException, BadCredentialsException, FailedLoginException {
+        log.info("Executing login request");
+        try {
+            if (isUserLoggedIn()) {
+                throw new FailedLoginException("User already logged in");
+            }
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginForm.getEmail());
+            boolean isValidPassword = BCrypt.checkpw(loginForm.getPassword(), userDetails.getPassword());
+            if (!isValidPassword) {
+                throw new BadCredentialsException("Invalid password");
+            }
+            issueToken(userDetails, response);
+        } catch (FailedLoginException | BadCredentialsException e) {
+            log.error("Error executing login request", e);
+            throw e;
         }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginForm.getEmail());
-        boolean isValidPassword = BCrypt.checkpw(loginForm.getPassword(), userDetails.getPassword());
-        if (!isValidPassword) {
-            throw new BadCredentialsException("Invalid password");
-        }
-        issueToken(userDetails, response);
     }
 
-    public void logout(
-            Authentication authentication,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws LogoutFailedException {
-        if (!getLogin()) {
-            throw new LogoutFailedException("User not logged in");
+    public void logout(Authentication authentication, HttpServletRequest request,
+                       HttpServletResponse response) throws LogoutFailedException {
+        log.info("Executing logout request");
+        if (!isUserLoggedIn()) {
+            throw new UnauthorizedException("User is not logged in");
         }
-        logoutHandler.logout(request, response, authentication);
-        disableToken(request, response);
+        try {
+            logoutHandler.logout(request, response, authentication);
+            disableToken(request, response);
+            SecurityContextHolder.clearContext();
+            if (isUserLoggedIn()) {
+                throw new LogoutFailedException("Logout failed");
+            }
+        } catch (UnauthorizedException | LogoutFailedException e) {
+            log.error("Error executing logout request", e);
+            throw new LogoutFailedException("Error executing logout request");
+        }
     }
 
-    public boolean getLogin() {
+    public boolean isUserLoggedIn() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return !(authentication instanceof AnonymousAuthenticationToken);
+        return authentication != null && !(authentication instanceof AnonymousAuthenticationToken);
     }
 
     public void issueToken(UserDetails userDetails, HttpServletResponse httpServletResponse) {
@@ -133,6 +150,7 @@ public class AuthService {
                     cookieToDelete.setPath(cookiePath);
                     cookieToDelete.setMaxAge(0);
                     cookieToDelete.setSecure(request.isSecure());
+                    break;
                 }
             }
         }

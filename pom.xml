@@ -18,8 +18,8 @@
   </parent>
 
   <modules>
-    <module>common</module>
     <module>db-management</module>
+    <module>common</module>
     <module>gateway-service</module>
     <module>user-service</module>
     <module>communications-service</module>

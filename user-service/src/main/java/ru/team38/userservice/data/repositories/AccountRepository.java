@@ -1,4 +1,4 @@
-package ru.team38.userservice.repositories;
+package ru.team38.userservice.data.repositories;
 
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
@@ -24,6 +24,4 @@ public class AccountRepository {
     public Result<Record> getAllAccountsByEmail(String email) {
         return dslContext.select().from(Account.ACCOUNT).where(Account.ACCOUNT.EMAIL.eq(email)).fetch();
     }
-
-
 }
