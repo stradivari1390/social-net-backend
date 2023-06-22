@@ -28,6 +28,7 @@ public class JooqConfig {
         return new DefaultDSLContext(configuration());
     }
 
+    @Bean
     public DefaultConfiguration configuration() {
         DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
         jooqConfiguration.set(connectionProvider());

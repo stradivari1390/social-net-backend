@@ -4,10 +4,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.team38.common.dto.AccountDto;
-import ru.team38.common.dto.CaptchaDto;
-import ru.team38.common.dto.LoginForm;
 import ru.team38.common.dto.*;
 
 
@@ -31,4 +29,7 @@ public interface UserServiceClient {
 
     @GetMapping("/api/v1/account/me")
     ResponseEntity<AccountDto> getAccount();
+
+    @PutMapping("/api/v1/account/me")
+    ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto account);
 }

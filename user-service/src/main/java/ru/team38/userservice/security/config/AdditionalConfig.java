@@ -23,19 +23,9 @@ public class AdditionalConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> {
-            AccountRecord account = accountRepository.getAccountByEmail(email);
-            if (account == null) {
-                throw new UsernameNotFoundException("Account does not exist");
-            }
-            return new User(
-                    account.getEmail(),
-                    account.getPassword(),
-                    true,
-                    true,
-                    true,
-                    account.getIsBlocked(),
-                    new ArrayList<>()
-            );
+            AccountRecord account = accountRepository.getAccountByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Account does not exist"));
+            return new User(account.getEmail(), account.getPassword(), true, true,
+                    true, account.getIsBlocked(), new ArrayList<>());
         };
     }
 

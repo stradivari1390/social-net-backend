@@ -1,14 +1,12 @@
 package ru.team38.userservice.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.exception.DataAccessException;
 import org.mapstruct.factory.Mappers;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.team38.common.dto.AccountDto;
@@ -18,7 +16,11 @@ import ru.team38.common.dto.PageDto;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.userservice.data.mappers.AccountMapper;
-import ru.team38.userservice.exceptions.status.UnauthorizedException;
+import ru.team38.userservice.data.repositories.AccountRepository;
+import ru.team38.userservice.exceptions.status.BadRequestException;
+
+import java.lang.reflect.Field;
+import java.util.NoSuchElementException;
 
 import static org.jooq.impl.DSL.min;
 
@@ -29,29 +31,25 @@ public class AccountService {
     private final DSLContext dsl;
     private final Account account = Account.ACCOUNT;
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
+    private final AccountRepository accountRepository;
 
-    public AccountDto getAuthenticatedAccount() throws UnauthorizedException, DataAccessException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication.getPrincipal() instanceof UserDetails currentUser)) {
-            throw new UnauthorizedException("User is not authenticated");
-        }
-        String email = currentUser.getUsername();
-
-        AccountRecord accountRecord = dsl.selectFrom(account)
-                .where(account.EMAIL.eq(email))
-                .fetchOne();
-
-        if (accountRecord == null) {
-            throw new DataAccessException("No account found with email: " + email);
-        }
-
-        return mapper.accountRecordToAccountDto(accountRecord);
+    public AccountDto getAuthenticatedAccount() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return accountRepository.getAccountByEmail(name)
+                .orElseThrow(() -> new BadRequestException("User not found"))
+                .map(record -> mapper.accountRecordToAccountDto((AccountRecord) record));
     }
 
+    @SneakyThrows
     public AccountDto updateAccount(AccountDto accountDto) {
-        AccountRecord updateRecord = mapper.accountDtoToAccountRecord(accountDto);
-        updateRecord.store();
-        return mapper.accountRecordToAccountDto(updateRecord);
+        AccountDto updateDto = getAuthenticatedAccount();
+        for (Field field : AccountDto.class.getDeclaredFields()) {
+            field.setAccessible(true);
+            if (field.get(accountDto) != null) {
+                field.set(updateDto, field.get(accountDto));
+            }
+        }
+        return accountRepository.updateAccount(updateDto);
     }
 
     public void deleteAccount() {

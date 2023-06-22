@@ -20,42 +20,23 @@ public class UserService {
     private final UserServiceClient userServiceClient;
 
     public ResponseEntity<String> register(RegisterDto registerDto) {
-        try {
-            return userServiceClient.register(registerDto);
-        } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            return ResponseEntity.status(e.status()).body(e.contentUTF8());
-        }
+        return userServiceClient.register(registerDto);
     }
 
     public ResponseEntity<String> login(LoginForm loginForm) {
-        try {
-            return userServiceClient.login(loginForm);
-        } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            return ResponseEntity.status(e.status()).body(e.contentUTF8());
-        }
+        return userServiceClient.login(loginForm);
     }
 
     public ResponseEntity<String> logout() {
-        try {
-            return userServiceClient.logout();
-        } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            return ResponseEntity.status(e.status()).body(e.contentUTF8());
-        }
+        return userServiceClient.logout();
     }
 
     public CaptchaDto getCaptcha() {
-        try {
-            ResponseEntity<CaptchaDto> responseEntity = userServiceClient.getCaptcha();
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                return responseEntity.getBody();
-            } else {
-                throw new RuntimeException("Failed to get captcha");
-            }
-        } catch (FeignException e) {
-            throw new RuntimeException(e.contentUTF8(), e);
+        ResponseEntity<CaptchaDto> responseEntity = userServiceClient.getCaptcha();
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            return responseEntity.getBody();
+        } else {
+            throw new RuntimeException("Failed to get captcha");
         }
     }
 
@@ -70,12 +51,12 @@ public class UserService {
     }
 
     public AccountDto getAccount() {
-        try {
-            ResponseEntity<AccountDto> responseEntity = userServiceClient.getAccount();
-            return responseEntity.getBody();
-        } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            throw new RuntimeException(e.contentUTF8(), e);
-        }
+        ResponseEntity<AccountDto> responseEntity = userServiceClient.getAccount();
+        return responseEntity.getBody();
+    }
+
+    public AccountDto updateAccount(AccountDto account) {
+        ResponseEntity<AccountDto> responseEntity = userServiceClient.updateAccount(account);
+        return responseEntity.getBody();
     }
 }
