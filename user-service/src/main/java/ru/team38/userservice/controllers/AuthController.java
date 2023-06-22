@@ -1,4 +1,4 @@
-package ru.team38.userservice.security.security_controller;
+package ru.team38.userservice.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +14,7 @@ import ru.team38.userservice.exceptions.AccountRegisterException;
 import ru.team38.userservice.exceptions.CaptchaCreationException;
 import ru.team38.userservice.exceptions.LogoutFailedException;
 import ru.team38.userservice.exceptions.status.UnauthorizedException;
-import ru.team38.userservice.security.security_service.AuthService;
+import ru.team38.userservice.services.AuthService;
 import ru.team38.userservice.services.CaptchaService;
 
 import javax.security.auth.login.FailedLoginException;

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
+import ru.team38.common.dto.RegisterDto;
 import ru.team38.gatewayservice.clients.UserServiceClient;
 
 @Slf4j
@@ -17,6 +18,15 @@ import ru.team38.gatewayservice.clients.UserServiceClient;
 public class UserService {
 
     private final UserServiceClient userServiceClient;
+
+    public ResponseEntity<String> register(RegisterDto registerDto) {
+        try {
+            return userServiceClient.register(registerDto);
+        } catch (FeignException e) {
+            log.error(e.contentUTF8());
+            return ResponseEntity.status(e.status()).body(e.contentUTF8());
+        }
+    }
 
     public ResponseEntity<String> login(LoginForm loginForm) {
         try {
