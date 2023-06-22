@@ -15,12 +15,11 @@ import ru.team38.common.dto.AccountSearchDto;
 import ru.team38.common.dto.PageDto;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
-import ru.team38.userservice.data.mappers.AccountMapper;
+import ru.team38.common.mappers.AccountMapper;
 import ru.team38.userservice.data.repositories.AccountRepository;
 import ru.team38.userservice.exceptions.status.BadRequestException;
 
 import java.lang.reflect.Field;
-import java.util.NoSuchElementException;
 
 import static org.jooq.impl.DSL.min;
 

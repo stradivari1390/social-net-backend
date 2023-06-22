@@ -9,9 +9,8 @@ import org.springframework.stereotype.Repository;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.records.AccountRecord;
-import ru.team38.userservice.data.mappers.AccountMapper;
+import ru.team38.common.mappers.AccountMapper;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -21,8 +20,9 @@ public class AccountRepository {
     private final Account account = Account.ACCOUNT;
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
 
-    public void save(AccountRecord accountRecord) {
-        dslContext.insertInto(account).set(accountRecord).execute();
+    public void save(AccountDto accountDto) {
+        AccountRecord record = dslContext.newRecord(account, mapper.accountDtoToAccountRecord(accountDto));
+        record.store();
     }
 
     public AccountDto updateAccount(AccountDto accountDto) {
@@ -38,6 +38,4 @@ public class AccountRepository {
     public Result<Record> getAllAccountsByEmail(String email) {
         return dslContext.select().from(account).where(account.EMAIL.eq(email)).fetch();
     }
-
-
 }

@@ -1,4 +1,4 @@
-package ru.team38.userservice.data.mappers;
+package ru.team38.common.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

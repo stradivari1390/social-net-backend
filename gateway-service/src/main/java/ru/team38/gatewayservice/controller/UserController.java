@@ -16,7 +16,6 @@ import ru.team38.gatewayservice.service.UserService;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
 
     @PostMapping("/api/v1/auth/register")

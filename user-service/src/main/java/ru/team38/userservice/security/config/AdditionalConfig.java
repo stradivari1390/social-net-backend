@@ -17,13 +17,13 @@ import java.util.ArrayList;
 @Configuration
 @RequiredArgsConstructor
 public class AdditionalConfig {
-
     private final AccountRepository accountRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> {
-            AccountRecord account = accountRepository.getAccountByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Account does not exist"));
+            AccountRecord account = accountRepository.getAccountByEmail(email)
+                    .orElseThrow(() -> new UsernameNotFoundException("Account does not exist"));
             return new User(account.getEmail(), account.getPassword(), true, true,
                     true, account.getIsBlocked(), new ArrayList<>());
         };
