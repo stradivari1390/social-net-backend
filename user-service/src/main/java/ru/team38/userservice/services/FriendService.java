@@ -39,12 +39,17 @@ public class FriendService {
         }
     }
 
-    public Integer getIncomingFriendRequestsCount(Long id) {
+    public Integer getIncomingFriendRequestsCount() throws FriendsServiceException {
         log.info("Executing getIncomingFriendRequests request");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication.getPrincipal() instanceof UserDetails)) {
+            throw new UnauthorizedException("User is not authenticated");
+        }
+        Long userId = accountService.getAuthenticatedAccount().getId();
         try {
-            return friendRepository.countIncomingFriendRequests(id);
+            return friendRepository.countIncomingFriendRequests(userId);
         } catch (DatabaseQueryException e) {
-            log.error("Error executing getIncomingFriendRequestsCount request from account ID {}", id, e);
+            log.error("Error executing getIncomingFriendRequestsCount request from account ID {}", userId, e);
             throw new FriendsServiceException("Error counting incoming friend requests", e);
         }
     }

@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.CaptchaDto;
-import ru.team38.common.dto.FriendDto;
 import ru.team38.common.dto.LoginForm;
-
-import java.util.List;
 
 
 @FeignClient(name = "user-service", url = "${user-service.url}")
@@ -26,7 +23,7 @@ public interface UserServiceClient {
     ResponseEntity<CaptchaDto> getCaptcha();
 
     @GetMapping("/api/v1/friends/count")
-    ResponseEntity<List<FriendDto>> getIncomingFriendRequests();
+    ResponseEntity<Integer> getIncomingFriendRequestsCount();
 
     @GetMapping("/api/v1/account/me")
     ResponseEntity<AccountDto> getAccount();

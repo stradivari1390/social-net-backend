@@ -38,9 +38,9 @@ public class UserController {
     }
 
     @GetMapping("/api/v1/friends/count")
-    public ResponseEntity<?> getIncomingFriendRequests() {
+    public Integer getIncomingFriendRequests() {
         log.info("Executing getIncomingFriendRequests request");
-        return userService.getIncomingFriendRequests();
+        return userService.getIncomingFriendRequestsCount();
     }
 
     @GetMapping("/api/v1/account/me")

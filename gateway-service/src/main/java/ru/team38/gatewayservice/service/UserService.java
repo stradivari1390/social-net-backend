@@ -49,12 +49,13 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<?> getIncomingFriendRequests() {
+    public Integer getIncomingFriendRequestsCount() {
         try {
-            return userServiceClient.getIncomingFriendRequests();
+            ResponseEntity<Integer> responseEntity = userServiceClient.getIncomingFriendRequestsCount();
+            return responseEntity.getBody();
         } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            return ResponseEntity.status(e.status()).body(e.contentUTF8());
+            log.error(e.contentUTF8(), e);
+            throw new RuntimeException(e.contentUTF8(), e);
         }
     }
 
