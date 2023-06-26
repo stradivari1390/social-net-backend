@@ -6,14 +6,12 @@ import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.RegisterDto;
 import ru.team38.common.dto.StatusCode;
 import ru.team38.common.jooq.tables.records.AccountRecord;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Mapper
 public interface AccountMapper {
-
     AccountMapper INSTANCE = Mappers.getMapper(AccountMapper.class);
 
     AccountDto accountRecordToAccountDto(AccountRecord accountRecord);
