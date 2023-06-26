@@ -7,9 +7,12 @@ import cn.apiclub.captcha.text.producer.DefaultTextProducer;
 import cn.apiclub.captcha.text.renderer.DefaultWordRenderer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.team38.common.dto.CaptchaDto;
-import ru.team38.userservice.MockCaptchaBase;
 import ru.team38.userservice.exceptions.CaptchaCreationException;
 
 import javax.imageio.ImageIO;
@@ -22,17 +25,18 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public final class CaptchaService {
+public class CaptchaService {
+
     private final DefaultTextProducer textProducer;
     private final DefaultWordRenderer wordRenderer;
     private final GradiatedBackgroundProducer backgroundProducer;
     private final DropShadowGimpyRenderer gimpyRenderer;
-    private final MockCaptchaBase mockCaptchaBase;
+    private final CacheManager cacheManager;
 
     public CaptchaDto createCaptcha() throws CaptchaCreationException {
         log.info("Executing createCaptcha request");
         try {
-            String captchaID = UUID.randomUUID().toString();
+            String captchaSecret = UUID.randomUUID().toString();
 
             Captcha captcha = new Captcha.Builder(200, 50)
                     .addText(textProducer, wordRenderer)
@@ -44,21 +48,59 @@ public final class CaptchaService {
             String captchaSolution = captcha.getAnswer();
             BufferedImage captchaImage = captcha.getImage();
 
-            mockCaptchaBase.storeCaptcha(captchaID, captchaSolution);
+            CaptchaDto captchaDto = getCaptchaDto(captchaSecret, captchaImage);
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try {
-                ImageIO.write(captchaImage, "png", baos);
-            } catch (IOException e) {
-                throw new CaptchaCreationException("Failed to encode captcha image to byte array.", e);
+            Cache cache = cacheManager.getCache("captchaCache");
+            if (cache != null) {
+                cache.put(captchaSecret, captchaSolution);
+                log.info("Captcha created and stored in cache with secret: {}", captchaSecret);
             }
-            byte[] bytes = baos.toByteArray();
-            String encodedImage = Base64.getEncoder().encodeToString(bytes);
 
-            return new CaptchaDto(captchaID, "data:image/png;base64, " + encodedImage);
-        } catch (CaptchaCreationException e) {
+            return captchaDto;
+        } catch (Exception e) {
             log.error("Error executing createCaptcha request", e);
             throw e;
+        }
+    }
+
+    @NotNull
+    private static CaptchaDto getCaptchaDto(String captchaSecret, BufferedImage captchaImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(captchaImage, "png", baos);
+        } catch (IOException e) {
+            throw new CaptchaCreationException("Failed to encode captcha image to byte array.", e);
+        }
+        byte[] bytes = baos.toByteArray();
+        String encodedImage = Base64.getEncoder().encodeToString(bytes);
+
+        return new CaptchaDto(captchaSecret, "data:image/png;base64, " + encodedImage);
+    }
+
+    public boolean validateCaptcha(String captchaSecret, String captchaSolution) {
+        Cache cache = cacheManager.getCache("captchaCache");
+        if (cache != null) {
+            String cachedCaptchaSolution = cache.get(captchaSecret, String.class);
+            if (cachedCaptchaSolution == null) {
+                log.error("Captcha expired for secret: {}", captchaSecret);
+                return false;
+            } else if (!cachedCaptchaSolution.equals(captchaSolution)) {
+                log.error("Invalid captcha code for secret: {}", captchaSecret);
+                return false;
+            }
+            return true;
+        } else {
+            log.error("Cache is null");
+            return false;
+        }
+    }
+
+    @Scheduled(fixedRateString = "#{${captcha.clearCacheRate} * 60000}")
+    public void clearExpiredCaptchas() {
+        Cache cache = cacheManager.getCache("captchaCache");
+        if (cache != null) {
+            log.info("Clearing captcha cache");
+            cache.clear();
         }
     }
 }

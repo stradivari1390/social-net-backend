@@ -12,6 +12,7 @@ import ru.team38.common.dto.LoginForm;
 import ru.team38.common.dto.RegisterDto;
 import ru.team38.userservice.exceptions.AccountRegisterException;
 import ru.team38.userservice.exceptions.CaptchaCreationException;
+import ru.team38.userservice.exceptions.InvalidCaptchaException;
 import ru.team38.userservice.exceptions.LogoutFailedException;
 import ru.team38.userservice.exceptions.status.UnauthorizedException;
 import ru.team38.userservice.services.AuthService;
@@ -29,9 +30,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto,
-                                           HttpServletResponse response) throws AccountRegisterException {
-        authService.register(registerDto, response);
-        return ResponseEntity.ok("");
+                                           HttpServletResponse response) throws AccountRegisterException, InvalidCaptchaException {
+        if (captchaService.validateCaptcha(registerDto.getCaptchaSecret(), registerDto.getCaptchaCode())) {
+            authService.register(registerDto, response);
+            return ResponseEntity.ok("Регистрация прошла успешно");
+        } else {
+            throw new InvalidCaptchaException("Invalid or expired captcha");
+        }
     }
 
     @PostMapping("/login")
