@@ -57,7 +57,7 @@ public class JwtService {
                 !tokenBlacklistService.isTokenBlacklisted(token));
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return getExpiration(token).before(new Date());
     }
 
