@@ -1,4 +1,4 @@
-package ru.team38.userservice.security.security_service;
+package ru.team38.userservice.services;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,27 +60,33 @@ public class AuthService {
             RegisterDto registerDto,
             HttpServletResponse response
     ) throws AccountRegisterException {
-        if (!registerDto.getPassword1().equals(registerDto.getPassword2())) {
-            throw new AccountRegisterException("Passwords mismatch", new PasswordMismatchException());
-        }
-        Result<Record> result = accountRepository.getAllAccountsByEmail(registerDto.getEmail());
-        if (!result.isEmpty()) {
-            throw new AccountRegisterException("User exists", new AccountExistException());
-        }
-        AccountRecord newAccountRecord =
-                mapper.registerDto2AccountRecord(registerDto, encoder.encode(registerDto.getPassword1()));
-        accountRepository.save(newAccountRecord);
+        try {
+            log.info("Executing registration request");
+            if (!registerDto.getPassword1().equals(registerDto.getPassword2())) {
+                throw new AccountRegisterException("Passwords mismatch", new PasswordMismatchException());
+            }
+            Result<Record> result = accountRepository.getAllAccountsByEmail(registerDto.getEmail());
+            if (!result.isEmpty()) {
+                throw new AccountRegisterException("User exists", new AccountExistException());
+            }
+            AccountRecord newAccountRecord =
+                    mapper.registerDto2AccountRecord(registerDto, encoder.encode(registerDto.getPassword1()));
+            accountRepository.save(newAccountRecord);
 
-        UserDetails userDetails = new User(
-                newAccountRecord.getEmail(),
-                newAccountRecord.getPassword(),
-                true,
-                true,
-                true,
-                newAccountRecord.getIsBlocked(),
-                new ArrayList<>()
-        );
-        issueToken(userDetails, response);
+            UserDetails userDetails = new User(
+                    newAccountRecord.getEmail(),
+                    newAccountRecord.getPassword(),
+                    true,
+                    true,
+                    true,
+                    newAccountRecord.getIsBlocked(),
+                    new ArrayList<>()
+            );
+            issueToken(userDetails, response);
+        } catch (AccountRegisterException e) {
+            log.error("Error executing registration request", e);
+            throw new AccountRegisterException("Error executing registration request", e);
+        }
     }
 
     public void login(LoginForm loginForm,

@@ -8,10 +8,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
+import ru.team38.common.dto.*;
 
 
 @FeignClient(name = "user-service", url = "${user-service.url}")
 public interface UserServiceClient {
+
+    @PostMapping("/api/v1/auth/register")
+    ResponseEntity<String> register(@RequestBody RegisterDto registerDto);
 
     @PostMapping("/api/v1/auth/login")
     ResponseEntity<String> login(@RequestBody LoginForm loginForm);

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
+import ru.team38.common.dto.RegisterDto;
 import ru.team38.gatewayservice.service.UserService;
 
 @Slf4j
@@ -18,6 +19,12 @@ import ru.team38.gatewayservice.service.UserService;
 public class UserController {
 
     private final UserService userService;
+
+    @PostMapping("/api/v1/auth/register")
+    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+        log.info("Executing registration request");
+        return userService.register(registerDto);
+    }
 
     @PostMapping("/api/v1/auth/login")
     public ResponseEntity<String> login(@RequestBody LoginForm loginForm) {
