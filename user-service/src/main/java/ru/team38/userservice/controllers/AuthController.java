@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
 import ru.team38.common.dto.RegisterDto;
-import ru.team38.userservice.exceptions.AccountRegisterException;
 import ru.team38.userservice.exceptions.CaptchaCreationException;
 import ru.team38.userservice.exceptions.InvalidCaptchaException;
 import ru.team38.userservice.exceptions.LogoutFailedException;
@@ -24,13 +23,12 @@ import javax.security.auth.login.FailedLoginException;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
     private final AuthService authService;
     private final CaptchaService captchaService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto,
-                                           HttpServletResponse response) throws AccountRegisterException, InvalidCaptchaException {
+                                           HttpServletResponse response) throws InvalidCaptchaException {
         if (captchaService.validateCaptcha(registerDto.getCaptchaSecret(), registerDto.getCaptchaCode())) {
             authService.register(registerDto, response);
             return ResponseEntity.ok("Регистрация прошла успешно");
@@ -40,15 +38,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginForm loginForm,
-                                        HttpServletResponse response) throws FailedLoginException {
+    public ResponseEntity<String> login(@RequestBody @Valid LoginForm loginForm, HttpServletResponse response) throws FailedLoginException {
         authService.login(loginForm, response);
         return ResponseEntity.ok().body("Уcпешная аутентификация");
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(Authentication authentication,
-                                         HttpServletRequest request,
+    public ResponseEntity<String> logout(Authentication authentication, HttpServletRequest request,
                                          HttpServletResponse response) throws UnauthorizedException, LogoutFailedException {
         authService.logout(authentication, request, response);
         return ResponseEntity.ok().body("Успешный логаут");

@@ -11,7 +11,7 @@ import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.Friends;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.common.jooq.tables.records.FriendsRecord;
-import ru.team38.userservice.data.mappers.FriendDtoMapper;
+import ru.team38.common.mappers.FriendDtoMapper;
 
 import java.util.List;
 

@@ -12,15 +12,6 @@ import ru.team38.userservice.exceptions.status.*;
 @ControllerAdvice
 public class GlobalExceptionAdvice {
 
-    @ExceptionHandler(AccountRegisterException.class)
-    public ResponseEntity<String> accountRegisterHandler(Exception ex) {
-        ex.printStackTrace();
-        if (ex.getCause() instanceof AccountExistException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
-    }
-
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> userNotFoundHandler(UsernameNotFoundException ex) {
         ex.printStackTrace();
