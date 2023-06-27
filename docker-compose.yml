@@ -7,9 +7,9 @@ services:
     image: postgres:15
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: socialnet
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
@@ -22,6 +22,21 @@ services:
         limits:
           cpus: '2'
           memory: 1G
+
+  db-migrations:
+    image: maven:3.8.3-openjdk-17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./:/project
+    command: >
+      bash -c "mvn -f /project/db-management/pom.xml liquibase:update"
+    depends_on:
+      - postgres
+    networks:
+      - socialnet_network
 
   frontend:
     container_name: frontend
@@ -37,7 +52,6 @@ services:
     image: javapro38/soc-net-user-svc
     depends_on:
       - postgres
-      # - rabbitmq
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -52,7 +66,10 @@ services:
     image: javapro38/soc-net-comm-svc
     depends_on:
       - postgres
-      # - rabbitmq
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "8082:8082"
     networks:
@@ -63,15 +80,11 @@ services:
     image: javapro38/soc-net-gate-svc
     depends_on:
       - user-service
-      # - communications-security_service
+      - communications-service
     ports:
       - "8080:8080"
     networks:
       - socialnet_network
-#    environment:
-#      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_ID=Create-github-client-id
-#      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_SECRET=Create-github-client-secret
-# Use Docker secrets?
 
 volumes:
   data:
