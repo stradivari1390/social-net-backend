@@ -16,9 +16,9 @@
 
     <properties>
         <db.postgres.host>postgres</db.postgres.host>
-        <db.postgres.name>${env.POSTGRES_DB}</db.postgres.name>
-        <db.postgres.username>${env.POSTGRES_USER}</db.postgres.username>
-        <db.postgres.password>${env.POSTGRES_PASSWORD}</db.postgres.password>
+        <db.postgres.name>${env.postgres_db}</db.postgres.name>
+        <db.postgres.username>${env.postgres_user}</db.postgres.username>
+        <db.postgres.password>${env.postgres_password}</db.postgres.password>
         <db.postgres.url>jdbc:postgresql://${db.postgres.host}/${db.postgres.name}</db.postgres.url>
     </properties>
 
