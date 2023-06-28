@@ -20,4 +20,8 @@ public class AccountController {
     public AccountDto updateAccount(@RequestBody AccountDto account) {
         return userService.updateAccount(account);
     }
+    @GetMapping("/{id}")
+    public AccountDto getAccountById(@PathVariable long id) {
+        return userService.getAccountById(id);
+    }
 }

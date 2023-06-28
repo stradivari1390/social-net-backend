@@ -1,4 +1,6 @@
 user-service:
   url: http://localhost:8081
+communications-service:
+  url: http://localhost:8082
 cors:
   origin: http://localhost:8098

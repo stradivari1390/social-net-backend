@@ -71,4 +71,10 @@ public class AccountService {
 
         return accountResultSearch;
     }
+    public AccountDto getAccountById(long id){
+        AccountRecord accountRecord = dsl.selectFrom(account)
+                .where(account.ID.eq(id))
+                .fetchOne();
+        return mapper.accountRecordToAccountDto(accountRecord);
+    }
 }

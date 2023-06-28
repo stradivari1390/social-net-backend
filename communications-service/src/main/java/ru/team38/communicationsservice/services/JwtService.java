@@ -1,4 +1,4 @@
-package ru.team38.communicationsservice;
+package ru.team38.communicationsservice.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
