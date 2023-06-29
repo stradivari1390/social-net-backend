@@ -3,9 +3,10 @@ package ru.team38.gatewayservice.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.team38.common.dto.ContentPostDto;
+import ru.team38.common.dto.post.ContentPostDto;
 import ru.team38.gatewayservice.service.CommunicationService;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Slf4j
@@ -21,8 +22,8 @@ public class CommunicationController {
                                   @RequestParam(value = "size", required = false) Integer size,
                                   @RequestParam(value = "accountIds", required = false) Long accountIds,
                                   @RequestParam(value = "tags", required = false) List<String> tags,
-                                  @RequestParam(value = "dateForm", required = false) Long dateFrom,
-                                  @RequestParam(value = "dateTo", required = false) Long dateTo,
+                                  @RequestParam(value = "dateForm", required = false) String dateFrom,
+                                  @RequestParam(value = "dateTo", required = false) String dateTo,
                                   @RequestParam(value = "author", required = false) String author) {
         log.info("Executing getPost request");
         return communicationService.getPost(withFriends, page, sort, isDeleted, size, accountIds, tags, dateFrom, dateTo, author);

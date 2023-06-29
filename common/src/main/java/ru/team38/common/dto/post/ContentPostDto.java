@@ -1,4 +1,4 @@
-package ru.team38.common.dto;
+package ru.team38.common.dto.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

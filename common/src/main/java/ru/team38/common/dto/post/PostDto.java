@@ -1,4 +1,4 @@
-package ru.team38.common.dto;
+package ru.team38.common.dto.post;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -19,11 +19,13 @@ public class PostDto {
     private ZonedDateTime timeChanged;
     private Long authorId;
     private String title;
-    private String type;
+    private TypePost type;
     private String postText;
     private Boolean isBlocked;
     private Integer commentsCount;
-    private List<String> tags;
+    private List<ReactionDto> reactions;
+    private String myReactions;
+    private List<TagDto> tags;
     private Integer likeAmount;
     private Boolean myLike;
     private String imagePath;

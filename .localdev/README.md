@@ -22,7 +22,7 @@ docker-compose -f docker-compose.yml up -d
 
 Порты:  
 - postgre: 5432 
-- frontend: 8098
+- frontend: 8088
 
 В postgre созданы бд socialnet, develop.
 
@@ -124,3 +124,29 @@ volumes = ["gitlab-runner-builds:/builds", "gitlab-runner-cache:/cache","/var/ru
 mvn clean install -P localhost
 ```
 ***
+## Frontend
+Для корректной работы необходимо выполнить следующие шаги:
+1. Обновить frontend:
+```
+docker-compose up -d frontend
+```
+2. В созданом контейнере поменять конфиг:
+   - пройдите в терминале контейнера по адресу: /etc/nginx/conf.d 
+   - откройте default.conf
+   - внесите следующее содержимое:
+```
+server {
+ listen 80;
+ server_name frontend;
+
+ location / {
+   root /usr/share/nginx/html;
+   try_files $uri /index.html;
+ }
+
+location /api/v1/ {
+   proxy_pass http://host.docker.internal:8080;
+ }
+}
+```
+3. Перезапустите контейнер.
