@@ -21,12 +21,31 @@ build:
     - mvn $MAVEN_CLI_OPTS clean install
     - echo "job $CI_JOB_ID was successful"
     - echo "build number $CI_PIPELINE_ID"
+  artifacts:
+    paths:
+      - user-service/target/
+      - communications-service/target/
+      - gateway-service/target/
 
 deploy:
   stage: deploy
   script:
-    - echo "job $CI_JOB_ID was successful"
-    - echo "build $CI_PIPELINE_ID deployed"
+    - echo "Logging out of Docker Hub"
+    - docker logout
+
+    - echo "Logging into Docker Hub"
+    - echo $docker_hub_password | docker login -u $docker_hub_username --password-stdin > /dev/null 2>&1
+
+    - docker build -t javapro38/soc-net-user-svc ./user-service
+    - docker push javapro38/soc-net-user-svc
+
+    - docker build -t javapro38/soc-net-comm-svc ./communications-service
+    - docker push javapro38/soc-net-comm-svc
+
+    - docker build -t javapro38/soc-net-gate-svc ./gateway-service
+    - docker push javapro38/soc-net-gate-svc
+
+    - echo "Logging out of Docker Hub"
+    - docker logout
   only:
-    - master
-    - develop
+   - master
