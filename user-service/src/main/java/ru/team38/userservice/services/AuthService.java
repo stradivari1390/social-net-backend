@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import ru.team38.common.aspects.LoggingMethod;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.LoginForm;
 import ru.team38.common.dto.RegisterDto;
@@ -50,66 +51,50 @@ public class AuthService {
     @Value("#{${jwt.cookie-max-age-min} * 60}")
     private int cookieMaxAge;
 
+    @LoggingMethod
     @Transactional
     public void register(RegisterDto registerDto, HttpServletResponse response) {
-        try {
-            log.info("Executing registration request");
-            if (!registerDto.getPassword1().equals(registerDto.getPassword2())) {
-                throw new BadRequestException("Passwords mismatch");
-            }
-            accountRepository.getAccountByEmail(registerDto.getEmail()).ifPresent(record -> {
-                throw new UnauthorizedException("User exists");
-            });
-            AccountDto newAccount = AccountDto.builder().email(registerDto.getEmail())
-                    .password(encoder.encode(registerDto.getPassword1()))
-                    .firstName(registerDto.getFirstName()).lastName(registerDto.getLastName())
-                    .isDeleted(false).isOnline(false).isBlocked(false).createdOn(ZonedDateTime.now())
-                    .messagePermission(true).regDate(ZonedDateTime.now()).birthDate(LocalDate.now())
-                    .build();
-            accountRepository.save(newAccount);
-            issueToken(newUserDetails(newAccount), response);
+        if (!registerDto.getPassword1().equals(registerDto.getPassword2())) {
+            throw new BadRequestException("Passwords mismatch");
         }
-        catch (Throwable e) {
-            log.error("Error executing registration request", e);
-            throw new BadRequestException("");
-        }
+        accountRepository.getAccountByEmail(registerDto.getEmail()).ifPresent(record -> {
+            throw new UnauthorizedException("User exists");
+        });
+        AccountDto newAccount = AccountDto.builder().email(registerDto.getEmail())
+                .password(encoder.encode(registerDto.getPassword1()))
+                .firstName(registerDto.getFirstName()).lastName(registerDto.getLastName())
+                .isDeleted(false).isOnline(false).isBlocked(false).createdOn(ZonedDateTime.now())
+                .messagePermission(true).regDate(ZonedDateTime.now()).birthDate(LocalDate.now())
+                .build();
+        accountRepository.save(newAccount);
+        issueToken(newUserDetails(newAccount), response);
     }
 
+    @LoggingMethod
     public void login(LoginForm loginForm,
                       HttpServletResponse response) throws UsernameNotFoundException, BadCredentialsException, FailedLoginException {
-        log.info("Executing login request");
-        try {
-            if (isUserLoggedIn()) {
-                throw new FailedLoginException("User already logged in");
-            }
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginForm.getEmail());
-            boolean isValidPassword = BCrypt.checkpw(loginForm.getPassword(), userDetails.getPassword());
-            if (!isValidPassword) {
-                throw new BadCredentialsException("Invalid password");
-            }
-            issueToken(userDetails, response);
-        } catch (FailedLoginException | BadCredentialsException e) {
-            log.error("Error executing login request", e);
-            throw e;
+        if (isUserLoggedIn()) {
+            throw new FailedLoginException("User already logged in");
         }
+        UserDetails userDetails = userDetailsService.loadUserByUsername(loginForm.getEmail());
+        boolean isValidPassword = BCrypt.checkpw(loginForm.getPassword(), userDetails.getPassword());
+        if (!isValidPassword) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        issueToken(userDetails, response);
     }
 
+    @LoggingMethod
     public void logout(Authentication authentication, HttpServletRequest request,
                        HttpServletResponse response) throws LogoutFailedException {
-        log.info("Executing logout request");
         if (!isUserLoggedIn()) {
             throw new UnauthorizedException("User is not logged in");
         }
-        try {
-            logoutHandler.logout(request, response, authentication);
-            disableToken(request, response);
-            SecurityContextHolder.clearContext();
-            if (isUserLoggedIn()) {
-                throw new LogoutFailedException("Logout failed");
-            }
-        } catch (UnauthorizedException | LogoutFailedException e) {
-            log.error("Error executing logout request", e);
-            throw new LogoutFailedException("Error executing logout request");
+        logoutHandler.logout(request, response, authentication);
+        disableToken(request, response);
+        SecurityContextHolder.clearContext();
+        if (isUserLoggedIn()) {
+            throw new LogoutFailedException("Logout failed");
         }
     }
 

@@ -32,6 +32,11 @@
             <version>${mapstruct.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>socialnet.team38</groupId>
             <artifactId>db-management</artifactId>
             <version>1.0-SNAPSHOT</version>

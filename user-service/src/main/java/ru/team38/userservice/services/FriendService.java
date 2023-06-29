@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ru.team38.common.aspects.LoggingMethod;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.FriendDto;
 import ru.team38.userservice.data.repositories.FriendRepository;

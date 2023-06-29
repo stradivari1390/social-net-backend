@@ -12,6 +12,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.team38.common.aspects.LoggingMethod;
 import ru.team38.common.dto.CaptchaDto;
 import ru.team38.userservice.exceptions.CaptchaCreationException;
 
@@ -33,34 +34,27 @@ public class CaptchaService {
     private final DropShadowGimpyRenderer gimpyRenderer;
     private final CacheManager cacheManager;
 
+    @LoggingMethod
     public CaptchaDto createCaptcha() throws CaptchaCreationException {
-        log.info("Executing createCaptcha request");
-        try {
-            String captchaSecret = UUID.randomUUID().toString();
+        String captchaSecret = UUID.randomUUID().toString();
 
-            Captcha captcha = new Captcha.Builder(200, 50)
-                    .addText(textProducer, wordRenderer)
-                    .addBackground(backgroundProducer)
-                    .gimp(gimpyRenderer)
-                    .addNoise()
-                    .build();
+        Captcha captcha = new Captcha.Builder(200, 50)
+                .addText(textProducer, wordRenderer)
+                .addBackground(backgroundProducer)
+                .gimp(gimpyRenderer)
+                .addNoise()
+                .build();
 
-            String captchaSolution = captcha.getAnswer();
-            BufferedImage captchaImage = captcha.getImage();
+        String captchaSolution = captcha.getAnswer();
+        BufferedImage captchaImage = captcha.getImage();
 
-            CaptchaDto captchaDto = getCaptchaDto(captchaSecret, captchaImage);
-
-            Cache cache = cacheManager.getCache("captchaCache");
-            if (cache != null) {
-                cache.put(captchaSecret, captchaSolution);
-                log.info("Captcha created and stored in cache with secret: {}", captchaSecret);
-            }
-
-            return captchaDto;
-        } catch (Exception e) {
-            log.error("Error executing createCaptcha request", e);
-            throw e;
+        CaptchaDto captchaDto = getCaptchaDto(captchaSecret, captchaImage);
+        Cache cache = cacheManager.getCache("captchaCache");
+        if (cache != null) {
+            cache.put(captchaSecret, captchaSolution);
+            log.info("Captcha created and stored in cache with secret: {}", captchaSecret);
         }
+        return captchaDto;
     }
 
     @NotNull

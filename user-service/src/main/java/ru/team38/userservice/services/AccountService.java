@@ -9,6 +9,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.team38.common.aspects.LoggingMethod;
 import ru.team38.common.dto.AccountDto;
 import ru.team38.common.dto.AccountResultSearchDto;
 import ru.team38.common.dto.AccountSearchDto;
@@ -32,6 +33,7 @@ public class AccountService {
     private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
     private final AccountRepository accountRepository;
 
+    @LoggingMethod
     public AccountDto getAuthenticatedAccount() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         return accountRepository.getAccountByEmail(name)
@@ -39,6 +41,7 @@ public class AccountService {
                 .map(record -> mapper.accountRecordToAccountDto((AccountRecord) record));
     }
 
+    @LoggingMethod
     @SneakyThrows
     public AccountDto updateAccount(AccountDto accountDto) {
         AccountDto updateDto = getAuthenticatedAccount();
@@ -51,11 +54,13 @@ public class AccountService {
         return accountRepository.updateAccount(updateDto);
     }
 
+    @LoggingMethod
     public void deleteAccount() {
         Long minId = dsl.select(min(account.ID)).from(account).fetchOneInto(Long.class);
         dsl.deleteFrom(account).where(account.ID.eq(minId)).execute();
     }
 
+    @LoggingMethod
     public AccountResultSearchDto findAccount(AccountSearchDto accountSearch, PageDto page) {
         AccountResultSearchDto accountResultSearch = new AccountResultSearchDto();
 
@@ -71,6 +76,8 @@ public class AccountService {
 
         return accountResultSearch;
     }
+
+    @LoggingMethod
     public AccountDto getAccountById(long id){
         AccountRecord accountRecord = dsl.selectFrom(account)
                 .where(account.ID.eq(id))
