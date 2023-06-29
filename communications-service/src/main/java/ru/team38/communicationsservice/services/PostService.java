@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ru.team38.common.dto.ContentPostDto;
-import ru.team38.common.dto.PostDto;
-import ru.team38.common.dto.PostSearchDto;
+import ru.team38.common.dto.post.ContentPostDto;
+import ru.team38.common.dto.post.PostDto;
+import ru.team38.common.dto.post.PostSearchDto;
 import ru.team38.communicationsservice.data.repositories.PostRepository;
 import ru.team38.communicationsservice.exceptions.NotFoundPostExceptions;
 

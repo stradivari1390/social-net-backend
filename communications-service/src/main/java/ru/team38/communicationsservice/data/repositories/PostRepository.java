@@ -1,6 +1,7 @@
 package ru.team38.communicationsservice.data.repositories;
 
 import lombok.RequiredArgsConstructor;
+
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -8,18 +9,18 @@ import org.jooq.SortField;
 import org.jooq.impl.DSL;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Repository;
-import ru.team38.common.dto.PostDto;
-import ru.team38.common.dto.PostSearchDto;
+import ru.team38.common.dto.post.PostDto;
+import ru.team38.common.dto.post.PostSearchDto;
 import ru.team38.common.jooq.tables.Account;
 import ru.team38.common.jooq.tables.Friends;
 import ru.team38.common.jooq.tables.Post;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.common.jooq.tables.records.PostRecord;
-import ru.team38.communicationsservice.data.mappers.PostMapper;
+import ru.team38.common.mappers.PostMapper;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class PostRepository {
         }else if(postSearchDto.getTags() != null){
             return dsl.select()
                     .from(post)
-                    .where(tagsCondition(postSearchDto.getTags()))
+                    //.where(tagsCondition(postSearchDto.getTags()))
                     .orderBy(sort(postSearchDto))
                     .limit(pageSize)
                     .fetch()
@@ -108,20 +109,22 @@ public class PostRepository {
                 .where(friends.ACCOUNT_FROM_ID.eq(accountId))
                 .and(friends.STATUS_CODE.eq("FRIEND"))
                 .and(authorIdCondition(postSearchDto.getAuthor()))
-                .and(tagsCondition(postSearchDto.getTags()))
+                //.and(tagsCondition(postSearchDto.getTags()))
                 .and(timeCondition(postSearchDto.getDateTo(), postSearchDto.getDateFrom()))
                 .orderBy(sort(postSearchDto))
                 .limit(postSearchDto.getSize())
                 .fetch()
                 .into(PostRecord.class);
     }
-    private Condition tagsCondition(List<String> tags) {
+    /*private Condition tagsCondition(List<String> tags) {
         Condition tagsCondition = DSL.trueCondition();
         for (String tag : tags) {
             tagsCondition = tagsCondition.and(DSL.coalesce(post.TAGS.cast(String[].class), DSL.field("ARRAY['']")).like("%" + tag + "%"));
         }
         return tagsCondition;
     }
+
+     */
 
     private Condition authorIdCondition(String author) {
         Condition authorIdCondition = DSL.trueCondition();
@@ -148,12 +151,14 @@ public class PostRepository {
         return authorIdCondition;
     }
 
-    private Condition timeCondition(Long timestampTo, Long timestampFrom) {
+    private Condition timeCondition(String to, String from) {
         Condition timeCondition = DSL.trueCondition();
-        if (timestampFrom != null) {
-            LocalDateTime dateTimeFrom = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestampFrom), ZoneId.systemDefault());
-            LocalDateTime dateTimeTo = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestampTo), ZoneId.systemDefault());
-            timeCondition = post.PUBLISH_DATE.between(dateTimeFrom, dateTimeTo);
+        if (from != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+            LocalDateTime fromDateTime = LocalDateTime.parse(from, formatter);
+            LocalDateTime toDateTime = LocalDateTime.parse(to, formatter);
+
+            timeCondition = post.PUBLISH_DATE.between(fromDateTime, toDateTime);
         }
         return timeCondition;
     }

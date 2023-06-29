@@ -54,7 +54,6 @@ VALUES
      'photo1.jpg', -- photo_name
      CURRENT_TIMESTAMP, -- created_on
      CURRENT_TIMESTAMP), -- updated_on
-
     (1001, FALSE, 'Seth', 'Macfarlane', 'user1001@example.com', '$2a$10$3ANjDb7flRoeBmwzEgp3duimiCXZB4X/v.fSQrYWPHgNO1Clt1QOK', '+79000001001', 'https://example.com/photo.jpg', 'Hi, I''m Seth Macfarlane, a scriptwriter from Boston, USA. Love crafting stories and humor!', 'Boston', 'United States', CURRENT_TIMESTAMP, '2000-01-02', TRUE, CURRENT_TIMESTAMP, FALSE, FALSE, 2, 'photo2.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (1002, FALSE, 'Irene', 'Merryweather', 'user1002@example.com', '$2a$10$s28dvh28x1ANrE7yvZ.UguYNJZ6wXIHcwJxQVsHgzmsDSstZo6/Se', '+79000001002', 'https://example.com/photo.jpg', 'Hello, I''m Irene Merryweather, a journalist from London. Passionate about sharing the truth.', 'London', 'United Kingdom', CURRENT_TIMESTAMP, '2000-01-03', TRUE, CURRENT_TIMESTAMP, FALSE, FALSE, 3, 'photo3.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (1003, FALSE, 'Peter', 'Rasputin', 'user1003@example.com', '$2a$10$ukVSvFBoEpcC.zCOi3HPPeHtaGNr.rUlKC8pNEhu6OyPeq3akIO.e', '+79000001003', 'https://example.com/photo.jpg', 'Peter Rasputin here, a farmer from Moscow, Russia. I cherish simple living and nature.', 'Moscow', 'Russia', CURRENT_TIMESTAMP, '2000-01-04', TRUE, CURRENT_TIMESTAMP, FALSE, FALSE, 4, 'photo4.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

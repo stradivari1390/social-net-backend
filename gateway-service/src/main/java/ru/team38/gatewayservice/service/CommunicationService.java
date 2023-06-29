@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.team38.common.dto.ContentPostDto;
+import ru.team38.common.dto.post.ContentPostDto;
 import ru.team38.gatewayservice.clients.CommunicationsServiceClient;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Slf4j
@@ -23,8 +23,8 @@ public class CommunicationService {
                                   Integer size,
                                   Long accountIds,
                                   List<String> tags,
-                                  Long dateFrom,
-                                  Long dateTo,
+                                  String dateFrom,
+                                  String dateTo,
                                   String author) {
         try {
             ResponseEntity<ContentPostDto> responseEntity = communicationsServiceClient.getPost(

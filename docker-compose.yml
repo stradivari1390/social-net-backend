@@ -40,10 +40,10 @@ services:
 
   frontend:
     container_name: frontend
-    image: javapro38/social-net-dock
+    image: javapro38/social-net-dock:latest
     restart: unless-stopped
     ports:
-      - "8098:80"
+      - "8088:80"
     networks:
       - socialnet_network
 
