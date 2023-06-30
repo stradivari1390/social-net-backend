@@ -19,7 +19,6 @@ import ru.team38.common.jooq.tables.records.PostRecord;
 import ru.team38.common.mappers.PostMapper;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +74,7 @@ public class PostRepository {
         }else if(postSearchDto.getTags() != null){
             return dsl.select()
                     .from(post)
-                    //.where(tagsCondition(postSearchDto.getTags()))
+                    .where(tagsCondition(postSearchDto.getTags()))
                     .orderBy(sort(postSearchDto))
                     .limit(pageSize)
                     .fetch()
@@ -109,14 +108,14 @@ public class PostRepository {
                 .where(friends.ACCOUNT_FROM_ID.eq(accountId))
                 .and(friends.STATUS_CODE.eq("FRIEND"))
                 .and(authorIdCondition(postSearchDto.getAuthor()))
-                //.and(tagsCondition(postSearchDto.getTags()))
+                .and(tagsCondition(postSearchDto.getTags()))
                 .and(timeCondition(postSearchDto.getDateTo(), postSearchDto.getDateFrom()))
                 .orderBy(sort(postSearchDto))
                 .limit(postSearchDto.getSize())
                 .fetch()
                 .into(PostRecord.class);
     }
-    /*private Condition tagsCondition(List<String> tags) {
+    private Condition tagsCondition(List<String> tags) {
         Condition tagsCondition = DSL.trueCondition();
         for (String tag : tags) {
             tagsCondition = tagsCondition.and(DSL.coalesce(post.TAGS.cast(String[].class), DSL.field("ARRAY['']")).like("%" + tag + "%"));
@@ -124,7 +123,7 @@ public class PostRepository {
         return tagsCondition;
     }
 
-     */
+
 
     private Condition authorIdCondition(String author) {
         Condition authorIdCondition = DSL.trueCondition();
