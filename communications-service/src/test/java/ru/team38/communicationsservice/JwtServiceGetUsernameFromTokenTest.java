@@ -25,6 +25,12 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class JwtServiceGetUsernameFromTokenTest {
 
+	{
+		System.setProperty("spring.datasource.url", "jdbc:postgresql://${db.postgres.host}/${db.postgres.name}");
+		System.setProperty("spring.datasource.username", "${db.postgres.username}");
+		System.setProperty("spring.datasource.password", "${db.postgres.password}");
+	}
+
 		@Mock
 		private HttpServletRequest request;
 
