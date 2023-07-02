@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.team38.common.dto.CaptchaDto;
 import ru.team38.common.dto.LoginForm;
 import ru.team38.common.dto.RegisterDto;
+import org.springframework.web.bind.annotation.*;
+import ru.team38.common.dto.*;
 import ru.team38.gatewayservice.service.UserService;
 
 @Slf4j
@@ -48,5 +50,11 @@ public class UserController {
     public Integer getIncomingFriendRequests() {
         log.info("Executing getIncomingFriendRequests request");
         return userService.getIncomingFriendRequestsCount();
+    }
+
+    @GetMapping("/api/v1/friends")
+    public PageFriendShortDto getFriendsByParameters(FriendSearchDto friendSearchDto, PageDto pageDto) {
+        log.info("Executing getFriends request");
+        return userService.getFriendsByParameters(friendSearchDto, pageDto);
     }
 }

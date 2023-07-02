@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import ru.team38.common.dto.FriendDto;
+import ru.team38.common.dto.FriendShortDto;
 import ru.team38.common.jooq.tables.records.AccountRecord;
 import ru.team38.common.jooq.tables.records.FriendsRecord;
 
@@ -34,4 +35,12 @@ public interface FriendDtoMapper {
     @Mapping(source = "previousStatus", target = "previousStatus")
     @Mapping(source = "rating", target = "rating")
     FriendsRecord friendDtoToFriendsRecord(FriendDto friendDto);
+
+    @Mapping(target = "id", constant = "0L")
+    @Mapping(source = "accountRecord.isDeleted", target = "isDeleted")
+    @Mapping(source = "friendsRecord.statusCode", target = "statusCode")
+    @Mapping(source = "accountRecord.id", target = "friendId")
+    @Mapping(source = "friendsRecord.previousStatus", target = "previousStatusCode")
+    @Mapping(source = "friendsRecord.rating", target = "rating")
+    FriendShortDto mapToFriendShortDto(FriendsRecord friendsRecord, AccountRecord accountRecord);
 }

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import ru.team38.common.dto.*;
-
 
 @FeignClient(name = "user-service", url = "${user-service.url}")
 public interface UserServiceClient {
@@ -33,6 +33,10 @@ public interface UserServiceClient {
 
     @PutMapping("/api/v1/account/me")
     ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto account);
+
     @GetMapping("/api/v1/account/{id}")
     ResponseEntity<AccountDto> getAccountById(@PathVariable long id);
+
+    @GetMapping("/api/v1/friends")
+    ResponseEntity<PageFriendShortDto> getFriendsByParameters(@RequestParam FriendSearchDto friendSearchDto, @RequestParam PageDto pageDto);
 }

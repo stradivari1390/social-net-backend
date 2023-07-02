@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.team38.common.dto.AccountDto;
-import ru.team38.common.dto.CaptchaDto;
-import ru.team38.common.dto.LoginForm;
-import ru.team38.common.dto.RegisterDto;
+import ru.team38.common.dto.*;
 import ru.team38.gatewayservice.clients.UserServiceClient;
 
 @Slf4j
@@ -67,5 +64,10 @@ public class UserService {
             log.error(e.contentUTF8());
             throw new RuntimeException(e.contentUTF8(), e);
         }
+    }
+
+    public PageFriendShortDto getFriendsByParameters(FriendSearchDto friendSearchDto, PageDto pageDto) {
+        ResponseEntity<PageFriendShortDto> responseEntity = userServiceClient.getFriendsByParameters(friendSearchDto, pageDto);
+        return responseEntity.getBody();
     }
 }
