@@ -5,9 +5,9 @@ application:
 
 spring:
   datasource:
-    url: jdbc:postgresql://${db.postgres.host}/${db.postgres.name}
-    username: ${db.postgres.username}
-    password: ${db.postgres.password}
+    url:
+    username:
+    password:
   liquibase:
     enabled: false
 jwt:

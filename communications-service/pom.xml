@@ -15,6 +15,18 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <profiles>
+        <profile>
+            <id>localhost</id>
+            <properties>
+                <db.postgres.host>localhost:5433</db.postgres.host>
+                <db.postgres.name>socialnet</db.postgres.name>
+                <db.postgres.username>postgres</db.postgres.username>
+                <db.postgres.password>postgres</db.postgres.password>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

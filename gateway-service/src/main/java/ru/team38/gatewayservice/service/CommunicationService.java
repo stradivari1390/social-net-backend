@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.team38.common.dto.post.ContentPostDto;
+import ru.team38.common.dto.post.CreatePostDto;
+import ru.team38.common.dto.post.PostDto;
 import ru.team38.gatewayservice.clients.CommunicationsServiceClient;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Slf4j
@@ -16,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommunicationService {
     private final CommunicationsServiceClient communicationsServiceClient;
+
     public ContentPostDto getPost(Boolean withFriends,
                                   Integer page,
                                   List<String> sort,
@@ -43,5 +46,36 @@ public class CommunicationService {
             log.error(e.contentUTF8());
             throw new RuntimeException(e.contentUTF8(), e);
         }
+    }
+
+    public PostDto getCreatePost(@RequestBody CreatePostDto createPostDto) {
+        try {
+            ResponseEntity<PostDto> responseEntity = communicationsServiceClient.getCreatePost(createPostDto);
+            return responseEntity.getBody();
+        } catch (FeignException e) {
+            log.error(e.contentUTF8());
+            throw new RuntimeException(e.contentUTF8(), e);
+        }
+    }
+    public PostDto getUpdatePost(@RequestBody CreatePostDto createPostDto) {
+        try {
+            ResponseEntity<PostDto> responseEntity = communicationsServiceClient.getUpdatePost(createPostDto);
+            return responseEntity.getBody();
+        } catch (FeignException e) {
+            log.error(e.contentUTF8());
+            throw new RuntimeException(e.contentUTF8(), e);
+        }
+    }
+    public PostDto getPostById(Long id) {
+        try {
+            ResponseEntity<PostDto> responseEntity = communicationsServiceClient.getPostById(id);
+            return responseEntity.getBody();
+        } catch (FeignException e) {
+            log.error(e.contentUTF8());
+            throw new RuntimeException(e.contentUTF8(), e);
+        }
+    }
+    public ResponseEntity<String> deletePost(Long id) {
+        return communicationsServiceClient.deletePost(id);
     }
 }
