@@ -1,5 +1,5 @@
 # Указываем базовый образ, содержащий Java runtime
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-jdk
 
 # Создаём переменную, указывающую на местоположение JAR-файла приложения
 ARG JAR_FILE=target/*.jar
