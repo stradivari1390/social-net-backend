@@ -4,11 +4,13 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.team38.common.dto.*;
-import ru.team38.common.dto.notification.NotificationCountDto;
-
-import java.util.UUID;
+import ru.team38.common.dto.notification.DataTimestampDto;
+import ru.team38.common.dto.notification.NotificationSettingDto;
+import ru.team38.common.dto.notification.NotificationUpdateDto;
+import ru.team38.common.dto.notification.NotificationsPageDto;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name = "user-service", url = "${spring.services.user.url}")
 public interface UserServiceClient {
@@ -29,7 +31,10 @@ public interface UserServiceClient {
     ResponseEntity<CaptchaDto> getCaptcha();
 
     @GetMapping("/api/v1/friends/count")
-    ResponseEntity<Integer> getIncomingFriendRequestsCount();
+    ResponseEntity<CountDto> getIncomingFriendRequestsCount();
+
+    @PostMapping("/api/v1/account")
+    ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto);
 
     @GetMapping("/api/v1/account/me")
     ResponseEntity<AccountDto> getAccount();
@@ -44,19 +49,35 @@ public interface UserServiceClient {
     @GetMapping("/api/v1/account/{id}")
     ResponseEntity<AccountDto> getAccountById(@PathVariable UUID id);
 
-    @GetMapping("/api/v1/friends")
-    ResponseEntity<PageFriendShortDto> getFriendsByParameters(@RequestParam FriendSearchDto friendSearchDto, @RequestParam PageDto pageDto);
-
     @GetMapping("/api/v1/notifications/count")
-    ResponseEntity<NotificationCountDto> getNotificationsCount();
+    ResponseEntity<DataTimestampDto> getNotificationsCount();
+
+    @GetMapping("/api/v1/notifications")
+    ResponseEntity<NotificationsPageDto> getNotificationsPage();
+
+    @PutMapping("/api/v1/notifications/readed")
+    ResponseEntity<String> readAllNotifications();
+
+    @GetMapping("/api/v1/notifications/settings")
+    ResponseEntity<NotificationSettingDto> getNotificationSetting();
+
+    @PutMapping("/api/v1/notifications/settings")
+    ResponseEntity<NotificationSettingDto> updateNotificationSetting(@RequestBody NotificationUpdateDto notificationUpdateDto);
+
+    @PostMapping("/api/v1/notifications/settings/{id}")
+    ResponseEntity<NotificationSettingDto> setNotificationSetting(@PathVariable UUID id);
 
     @GetMapping("/api/v1/friends")
     ResponseEntity<PageFriendShortDto> getFriendsByParameters(
+            @RequestParam("statusCode") StatusCode statusCode,
             @RequestParam("firstName") String firstName,
             @RequestParam("city") String city,
             @RequestParam("country") String country,
             @RequestParam("ageFrom") Integer ageFrom,
-            @RequestParam("ageTo") Integer ageTo
+            @RequestParam("ageTo") Integer ageTo,
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size,
+            @RequestParam("sort") List<String> sort
     );
 
     @GetMapping("/api/v1/friends/recommendations")
@@ -67,21 +88,17 @@ public interface UserServiceClient {
             @RequestParam("ageFrom") Integer ageFrom,
             @RequestParam("ageTo") Integer ageTo
     );
+
     @GetMapping("/api/v1/geo/country")
     ResponseEntity<List<CountryDto>> getCountries();
 
     @GetMapping("/api/v1/geo/country/{countryId}/city")
     ResponseEntity<List<CityDto>> getCitiesByCountryId(@PathVariable("countryId") String countryId);
-    
+
     @GetMapping("/api/v1/account/search")
-    ResponseEntity<AccountResultSearchDto> findAccount(@RequestParam String firstName,
-                                                       @RequestParam String lastName,
-                                                       @RequestParam Integer ageFrom,
-                                                       @RequestParam Integer ageTo);
-
-
-
-
-
+    ResponseEntity<PageAccountDto> findAccount(@RequestParam String firstName,
+                                               @RequestParam String lastName,
+                                               @RequestParam Integer ageFrom,
+                                               @RequestParam Integer ageTo);
 
 }

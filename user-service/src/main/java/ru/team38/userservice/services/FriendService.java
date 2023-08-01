@@ -53,7 +53,7 @@ public class FriendService {
         }
     }
 
-    public Integer getIncomingFriendRequestsCount() throws FriendsServiceException {
+    public CountDto getIncomingFriendRequestsCount() throws FriendsServiceException {
         log.info("Executing getIncomingFriendRequests request");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication.getPrincipal() instanceof UserDetails)) {
@@ -61,7 +61,7 @@ public class FriendService {
         }
         UUID userId = accountService.getAuthenticatedAccount().getId();
         try {
-            return friendRepository.countIncomingFriendRequests(userId);
+            return new CountDto(friendRepository.countIncomingFriendRequests(userId));
         } catch (DatabaseQueryException e) {
             log.error("Error executing getIncomingFriendRequestsCount request from account ID {}", userId, e);
             throw new FriendsServiceException("Error counting incoming friend requests", e);
@@ -78,23 +78,28 @@ public class FriendService {
         friendSearchDto = ageToBirthDate(friendSearchDto);
         friendSearchDto.setId(userId);
         Condition condition = getCondition(friendSearchDto);
-        List<FriendShortDto> friendShortDtoList;
+        StatusCode statusCode = friendSearchDto.getStatusCode();
+        List<Object> friendsList;
         try {
-            friendShortDtoList = friendRepository.getFriendsByParameters(userId, condition);
+            if (pageDto.getSize() == null) {
+                friendsList = friendRepository.getFriendsByParameters(userId, condition, statusCode);
+            } else {
+                friendsList = friendRepository.getFriendsByParametersTabs(userId, condition, statusCode);
+            }
         } catch (DatabaseQueryException e) {
             log.error("Error executing getFriends request from account ID {}", userId, e);
             throw new FriendsServiceException("Error getting current user's friends", e);
         }
-        if (friendShortDtoList.size() == 0) {
-            throw new FriendsServiceException("No entries found", null);
+        if (friendsList.size() == 0) {
+            return getPageFriendShortDto(new ArrayList<>(), pageDto);
         }
-        return getPageFriendShortDto(friendShortDtoList, pageDto);
+        return getPageFriendShortDto(friendsList, pageDto);
     }
 
-    public PageFriendShortDto getPageFriendShortDto(List<FriendShortDto> friendShortDtoList, PageDto pageDto) {
+    public PageFriendShortDto getPageFriendShortDto(List<Object> friendsList, PageDto pageDto) {
         Sort sort = new Sort(
                 true,
-                true,
+                false,
                 true
         );
         PageableObject pageableObject = new PageableObject(
@@ -102,21 +107,21 @@ public class FriendService {
                 sort,
                 pageDto.getSize(),
                 true,
-                true,
-                pageDto.getPage()
+                false,
+                0
         );
         return new PageFriendShortDto(
-                friendShortDtoList.size(),
+                friendsList.size(),
+                1,
                 0,
-                pageDto.getPage(),
                 pageDto.getSize(),
-                friendShortDtoList,
+                friendsList,
                 sort,
                 true,
                 true,
-                0,
+                friendsList.size(),
                 pageableObject,
-                true
+                false
         );
     }
 

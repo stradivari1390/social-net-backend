@@ -14,6 +14,11 @@ import java.util.UUID;
 public class AccountController {
     private final AccountService accountService;
 
+    @PostMapping("/")
+    public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto) {
+        return ResponseEntity.ok(accountService.createAccount(accountDto));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<AccountDto> getAccount() {
         return ResponseEntity.ok(accountService.getAuthenticatedAccount());
@@ -31,7 +36,7 @@ public class AccountController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<AccountResultSearchDto> findAccount(AccountSearchDto accountSearch, PageDto page) {
+    public ResponseEntity<PageAccountDto> findAccount(AccountSearchDto accountSearch, PageDto page) {
         return ResponseEntity.ok(accountService.findAccount(accountSearch, page));
     }
 

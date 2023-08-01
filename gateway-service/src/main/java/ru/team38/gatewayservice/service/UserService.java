@@ -7,12 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.team38.common.dto.*;
-import ru.team38.common.dto.notification.NotificationCountDto;
+import ru.team38.common.dto.notification.DataTimestampDto;
+import ru.team38.common.dto.notification.NotificationSettingDto;
+import ru.team38.common.dto.notification.NotificationUpdateDto;
+import ru.team38.common.dto.notification.NotificationsPageDto;
 import ru.team38.gatewayservice.clients.UserServiceClient;
 
-import java.util.UUID;
-
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -46,14 +48,18 @@ public class UserService {
         }
     }
 
-    public Integer getIncomingFriendRequestsCount() {
+    public CountDto getIncomingFriendRequestsCount() {
         try {
-            ResponseEntity<Integer> responseEntity = userServiceClient.getIncomingFriendRequestsCount();
+            ResponseEntity<CountDto> responseEntity = userServiceClient.getIncomingFriendRequestsCount();
             return responseEntity.getBody();
         } catch (FeignException e) {
             log.error(e.contentUTF8(), e);
             throw new RuntimeException(e.contentUTF8(), e);
         }
+    }
+
+    public AccountDto createAccount(AccountDto accountDto) {
+        return userServiceClient.createAccount(accountDto).getBody();
     }
 
     public AccountDto getAccount() {
@@ -73,8 +79,28 @@ public class UserService {
         }
     }
 
-    public NotificationCountDto getNotificationsCount() {
+    public DataTimestampDto getNotificationsCount() {
         return userServiceClient.getNotificationsCount().getBody();
+    }
+
+    public NotificationsPageDto getNotificationsPage() {
+        return userServiceClient.getNotificationsPage().getBody();
+    }
+
+    public String readAllNotifications() {
+        return userServiceClient.readAllNotifications().getBody();
+    }
+
+    public NotificationSettingDto getNotificationSetting() {
+        return userServiceClient.getNotificationSetting().getBody();
+    }
+
+    public NotificationSettingDto updateNotificationSetting(NotificationUpdateDto notificationUpdateDto) {
+        return userServiceClient.updateNotificationSetting(notificationUpdateDto).getBody();
+    }
+
+    public NotificationSettingDto setNotificationSetting(UUID id) {
+        return userServiceClient.setNotificationSetting(id).getBody();
     }
 
     public ResponseEntity<String> deleteAccount() {
@@ -83,11 +109,15 @@ public class UserService {
 
     public PageFriendShortDto getFriendsByParameters(FriendSearchDto friendSearchDto, PageDto pageDto) {
         ResponseEntity<PageFriendShortDto> responseEntity = userServiceClient.getFriendsByParameters(
+                friendSearchDto.getStatusCode(),
                 friendSearchDto.getFirstName(),
                 friendSearchDto.getCity(),
                 friendSearchDto.getCountry(),
                 friendSearchDto.getAgeFrom(),
-                friendSearchDto.getAgeTo());
+                friendSearchDto.getAgeTo(),
+                pageDto.getPage(),
+                pageDto.getSize(),
+                pageDto.getSort());
         return responseEntity.getBody();
     }
 
@@ -99,8 +129,9 @@ public class UserService {
                 friendSearchDto.getAgeFrom(),
                 friendSearchDto.getAgeTo());
         return responseEntity.getBody();
-    
+
     }
+
     public ResponseEntity<List<CountryDto>> getCountries() {
         return userServiceClient.getCountries();
     }
@@ -109,8 +140,8 @@ public class UserService {
         return userServiceClient.getCitiesByCountryId(countryId);
     }
 
-    public AccountResultSearchDto findAccount(AccountSearchDto accountSearchDto, PageDto pageDto) {
-        ResponseEntity<AccountResultSearchDto> responseEntity = userServiceClient
+    public PageAccountDto findAccount(AccountSearchDto accountSearchDto, PageDto pageDto) {
+        ResponseEntity<PageAccountDto> responseEntity = userServiceClient
                 .findAccount(accountSearchDto.getFirstName(),
                         accountSearchDto.getLastName(),
                         accountSearchDto.getAgeFrom(),

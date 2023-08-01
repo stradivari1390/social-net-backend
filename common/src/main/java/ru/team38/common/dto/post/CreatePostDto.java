@@ -5,11 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreatePostDto {
-    private Long id;
+    private UUID id;
     private String imagePath;
     private String postText;
     private String publishDate;
