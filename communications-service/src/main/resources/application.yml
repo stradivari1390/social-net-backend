@@ -1,0 +1,21 @@
+server.port: 8082
+application:
+  title: Communication Service
+  version: v1.0
+
+spring:
+  datasource:
+    url:
+    username:
+    password:
+  liquibase:
+    enabled: false
+jwt:
+  secret: 3255526a4b323074654133697a626c6e67634b3333586c7a64425a79666e4676
+  token-validity-min: 60
+  cookie-max-age-min: 60
+
+server:
+  servlet:
+    session:
+      tracking-modes: cookie

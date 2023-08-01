@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+    <changeSet id="create-post-table" author="Vladislav Lukin">
+        <createTable tableName="post" schemaName="socialnet" remarks="Таблица для хранения информации о журнале изменений">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="Уникальный идентификатор записи журнала изменений">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="changelog_pkey"/>
+            </column>
+            <column name="is_deleted" type="BOOLEAN" remarks="Флаг, указывающий, удалена ли запись журнала изменений">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время записи журнала изменений">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_changed" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время последнего изменения записи журнала изменений">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" type="BIGINT" remarks="Идентификатор автора записи журнала изменений">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="TEXT" remarks="Заголовок записи журнала изменений">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="TEXT" remarks="Тип поста: POSTED, QUEUED - опубликован, поставлен в очередь (для отложенной публикации)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="post_text" type="TEXT" remarks="Текст записи журнала изменений">
+            </column>
+            <column name="is_blocked" type="BOOLEAN" remarks="Флаг, указывающий, заблокирована ли запись журнала изменений">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comments_count" type="INTEGER" remarks="Количество комментариев к записи журнала изменений">
+            </column>
+            <column name="tags" type="TEXT[]" remarks="Теги, связанные с записью журнала изменений">
+            </column>
+            <column name="like_amount" type="INTEGER" remarks="Количество лайков к записи журнала изменений">
+            </column>
+            <column name="my_like" type="BOOLEAN" remarks="Флаг, указывающий, поставил ли текущий пользователь лайк к записи журнала изменений">
+            </column>
+            <column name="image_path" type="TEXT" remarks="Путь к изображению, связанному с запис">
+            </column>
+            <column name="publish_date" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время публикации поста">
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

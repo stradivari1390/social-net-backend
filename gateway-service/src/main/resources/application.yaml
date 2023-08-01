@@ -1,0 +1,8 @@
+spring:
+  services:
+    user:
+      url:
+    communications:
+      url:
+  cors:
+    origin:

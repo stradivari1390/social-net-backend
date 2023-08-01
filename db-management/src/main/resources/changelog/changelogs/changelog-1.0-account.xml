@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+    <changeSet id="create-account-table" author="Stanislav Romanov">
+        <createTable tableName="account" schemaName="socialnet" remarks="Таблица для сущности аккаунта пользователя">
+            <!-- table columns -->
+            <column autoIncrement="true" name="id" type="BIGINT" remarks="Уникальный идентификатор для аккаунта">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="account_pkey"/>
+            </column>
+            <column name="is_deleted" type="BOOLEAN" remarks="Булевый флаг, указывающий, удалена ли учетная запись">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="TEXT" remarks="Имя владельца учетной записи">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="TEXT" remarks="Фамилия владельца учетной записи">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="TEXT" remarks="Электронная почта владельца учетной записи">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="TEXT" remarks="Хешированный пароль для учетной записи">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="TEXT" remarks="Телефонный номер владельца учетной записи">
+            </column>
+            <column name="photo" type="TEXT" remarks="Ссылка на фото профайла владельца учетной записи">
+            </column>
+            <column name="about" type="TEXT" remarks="Содержание раздела 'О себе' для учетной записи">
+            </column>
+            <column name="city" type="TEXT" remarks="Город владельца учетной записи">
+            </column>
+            <column name="country" type="TEXT" remarks="Страна владельца учетной записи">
+            </column>
+            <column name="reg_date" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время регистрации учетной записи">
+                <constraints nullable="false"/>
+            </column>
+            <column name="birth_date" type="date" remarks="Дата рождения владельца учетной записи">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_permission" type="BOOLEAN" remarks="Булевый флаг, указывающий, имеет ли учетная запись права на отправку сообщений">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_online_time" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время, когда последний раз владелец учетной записи был в сети">
+            </column>
+            <column name="is_online" type="BOOLEAN" remarks="Булевый флаг, указывающий, находится ли владелец учетной записи в сети">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_blocked" type="BOOLEAN" remarks="Булевый флаг, указывающий, заблокирован ли аккаунт">
+                <constraints nullable="false"/>
+            </column>
+            <column name="photo_id" type="BIGINT" remarks="Уникальный идентификатор фото профайла владельца учетной записи">
+            </column>
+            <column name="photo_name" type="TEXT" remarks="Название фото профайла владельца учетной записи">
+            </column>
+            <column name="created_on" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время создания учетной записи">
+            </column>
+            <column name="updated_on" type="TIMESTAMP WITHOUT TIME ZONE" remarks="Время последнего обновления учетной записи">
+            </column>
+        </createTable>
+
+        <!-- keys -->
+        <addUniqueConstraint columnNames="email" constraintName="account_email_key" tableName="account" schemaName="socialnet"/>
+
+    </changeSet>
+</databaseChangeLog>

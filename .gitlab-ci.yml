@@ -1,0 +1,51 @@
+stages:
+  - build
+  - deploy
+
+build:
+  image: maven:3.8.5-openjdk-17-slim
+  services:
+    - name: postgres:15
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+    POSTGRES_USER: $postgres_user
+    POSTGRES_PASSWORD: $postgres_password
+    POSTGRES_DB: $postgres_db
+    POSTGRES_HOST_AUTH_METHOD: trust
+  cache:
+    paths:
+      - .m2/repository
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean install
+    - echo "job $CI_JOB_ID was successful"
+    - echo "build number $CI_PIPELINE_ID"
+  artifacts:
+    paths:
+      - user-service/target/
+      - communications-service/target/
+      - gateway-service/target/
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Logging out of Docker Hub"
+    - docker logout
+
+    - echo "Logging into Docker Hub"
+    - echo $docker_hub_password | docker login -u $docker_hub_username --password-stdin > /dev/null 2>&1
+
+    - docker build -t javapro38/soc-net-user-svc ./user-service
+    - docker push javapro38/soc-net-user-svc
+
+    - docker build -t javapro38/soc-net-comm-svc ./communications-service
+    - docker push javapro38/soc-net-comm-svc
+
+    - docker build -t javapro38/soc-net-gate-svc ./gateway-service
+    - docker push javapro38/soc-net-gate-svc
+
+    - echo "Logging out of Docker Hub"
+    - docker logout
+  only:
+   - master

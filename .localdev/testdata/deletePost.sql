@@ -1,0 +1,1 @@
+DELETE FROM socialnet.post WHERE id BETWEEN 1000 AND 1009;

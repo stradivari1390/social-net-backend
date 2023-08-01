@@ -1,0 +1,27 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="create-friends-table" author="Stanislav Romanov">
+        <createTable tableName="friends" schemaName="socialnet" remarks="Таблица сущности отношения аккаунта к аккаунту">
+            <column autoIncrement="true" name="id" type="BIGINT" remarks="Уникальный идентификатор отношения">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="friends_pkey"/>
+            </column>
+            <column name="status_code" type="TEXT" remarks="Текстовый код - статус отношения">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_from_id" type="BIGINT" remarks="Уникальный идентификатор субъекта отношения">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requested_account_id" type="BIGINT" remarks="Уникальный идентификатор объекта отношения">
+                <constraints nullable="false"/>
+            </column>
+            <column name="previous_status" type="TEXT" remarks="Текстовый код - предыдущего статуса отношения">
+            </column>
+            <column name="rating" type="SMALLINT" remarks="Рейтинг">
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>db-management</artifactId>
+    <packaging>pom</packaging>
+
+    <parent>
+        <artifactId>social-network</artifactId>
+        <groupId>socialnet.team38</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <db.postgres.host>postgres</db.postgres.host>
+        <db.postgres.name>${env.postgres_db}</db.postgres.name>
+        <db.postgres.username>${env.postgres_user}</db.postgres.username>
+        <db.postgres.password>${env.postgres_password}</db.postgres.password>
+        <db.postgres.url>jdbc:postgresql://${db.postgres.host}/${db.postgres.name}</db.postgres.url>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>localhost</id>
+            <properties>
+                <db.postgres.host>localhost:5433</db.postgres.host>
+                <db.postgres.name>socialnet</db.postgres.name>
+                <db.postgres.username>postgres</db.postgres.username>
+                <db.postgres.password>postgres</db.postgres.password>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <!--DataBase-->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase-core.version}</version>
+        </dependency>
+        <!--DataBase-->
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson-bom.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Liquibase plugin -->
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase-core.version}</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <changeLogFile>src/main/resources/changelog/changelog-master.xml</changeLogFile>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>${db.postgres.url}</url>
+                    <username>${db.postgres.username}</username>
+                    <password>${db.postgres.password}</password>
+                </configuration>
+            </plugin>
+            <!-- Liquibase plugin -->
+
+            <!-- JOOQ GEN-->
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jdbc>
+                        <driver>org.postgresql.Driver</driver>
+                        <url>${db.postgres.url}</url>
+                        <user>${db.postgres.username}</user>
+                        <password>${db.postgres.password}</password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                            <inputSchema>${db.postgres.name}</inputSchema>
+                            <includes>.*</includes>
+                        </database>
+                        <target>
+                            <packageName>ru.team38.common.jooq</packageName>
+                            <directory>../common/src/main/java</directory>
+                            <clean>true</clean>
+                        </target>
+                    </generator>
+                </configuration>
+            </plugin>
+            <!--JOOQ GEN-->
+        </plugins>
+    </build>
+
+</project>

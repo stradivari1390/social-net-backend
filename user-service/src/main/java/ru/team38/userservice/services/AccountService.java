@@ -1,0 +1,85 @@
+package ru.team38.userservice.services;
+
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.text.WordUtils;
+import org.jooq.DSLContext;
+import org.mapstruct.factory.Mappers;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.team38.common.aspects.LoggingMethod;
+import ru.team38.common.dto.AccountDto;
+import ru.team38.common.dto.AccountResultSearchDto;
+import ru.team38.common.dto.AccountSearchDto;
+import ru.team38.common.dto.PageDto;
+import ru.team38.common.jooq.tables.Account;
+import ru.team38.common.jooq.tables.records.AccountRecord;
+import ru.team38.common.mappers.AccountMapper;
+import ru.team38.userservice.data.repositories.AccountRepository;
+import ru.team38.userservice.exceptions.status.BadRequestException;
+
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class AccountService {
+    private final DSLContext DSL;
+    private final Account ACCOUNT = Account.ACCOUNT;
+    private final AccountMapper mapper = Mappers.getMapper(AccountMapper.class);
+    private final AccountRepository accountRepository;
+
+    @LoggingMethod
+    public AccountDto getAuthenticatedAccount() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return accountRepository.getAccountByEmail(name)
+                .orElseThrow(() -> new BadRequestException("User not found"))
+                .map(record -> mapper.accountRecordToAccountDto((AccountRecord) record));
+    }
+
+    @LoggingMethod
+    @SneakyThrows
+    public AccountDto updateAccount(AccountDto accountDto) {
+        AccountDto updateDto = getAuthenticatedAccount();
+        for (Field field : AccountDto.class.getDeclaredFields()) {
+            field.setAccessible(true);
+            if (field.get(accountDto) != null) {
+                field.set(updateDto, field.get(accountDto));
+            }
+        }
+        return accountRepository.updateAccount(updateDto);
+    }
+
+    @LoggingMethod
+    public void deleteAccount() {
+        AccountDto accountDto = getAuthenticatedAccount();
+        accountDto.setIsDeleted(true);
+    }
+
+    @LoggingMethod
+    public AccountResultSearchDto findAccount(AccountSearchDto accountSearchDto, PageDto page) {
+        UUID userId = getAuthenticatedAccount().getId();
+        accountSearchDto.setFirstName(WordUtils.capitalizeFully(accountSearchDto.getFirstName()));
+        accountSearchDto.setLastName(WordUtils.capitalizeFully(accountSearchDto.getLastName()));
+        if (accountSearchDto.getAgeFrom() != null) {
+            accountSearchDto.setMaxBirthDate(LocalDate.now()
+                    .minusYears(accountSearchDto.getAgeFrom()));
+        }
+        if (accountSearchDto.getAgeTo() != null) {
+            accountSearchDto.setMinBirthDate(LocalDate.now()
+                    .minusYears(accountSearchDto.getAgeTo()));
+        }
+        return accountRepository.findAccount(userId, accountSearchDto);
+    }
+
+    @LoggingMethod
+    public AccountDto getAccountById(UUID id){
+        AccountRecord accountRecord = DSL.selectFrom(ACCOUNT)
+                .where(ACCOUNT.ID.eq(id))
+                .fetchOne();
+        return mapper.accountRecordToAccountDto(accountRecord);
+    }
+}
