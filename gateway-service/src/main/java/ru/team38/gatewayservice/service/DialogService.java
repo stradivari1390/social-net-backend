@@ -1,38 +1,36 @@
 package ru.team38.gatewayservice.service;
 
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.team38.common.dto.dialog.PageDialogDto;
-import ru.team38.common.dto.dialog.UnreadCountDto;
+import ru.team38.common.dto.dialog.DialogDto;
+import ru.team38.common.dto.dialog.MessageShortDto;
+import ru.team38.common.dto.other.CountDto;
 import ru.team38.gatewayservice.clients.CommunicationsServiceClient;
 
-import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DialogService {
     private final CommunicationsServiceClient communicationsServiceClient;
-    public PageDialogDto getDialogs(Integer page, Integer size, List<String> sort) {
-        try {
-            ResponseEntity<PageDialogDto> responseEntity = communicationsServiceClient.getDialogs(page, size, sort);
-            return responseEntity.getBody();
-        } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            throw new RuntimeException(e.contentUTF8(), e);
-        }
+
+    public Page<DialogDto> getDialogs(Pageable pageable) {
+        return communicationsServiceClient.getDialogs(pageable).getBody();
     }
 
-    public UnreadCountDto getUnreadMessagesCount() {
-        try {
-            ResponseEntity<UnreadCountDto> responseEntity = communicationsServiceClient.getUnreadMessagesCount();
-            return responseEntity.getBody();
-        } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            throw new RuntimeException(e.contentUTF8(), e);
-        }
+    public CountDto getUnreadMessagesCount() {
+        return communicationsServiceClient.getUnreadMessagesCount().getBody();
+    }
+
+    public DialogDto getDialogByRecipientId(UUID id) {
+        return communicationsServiceClient.getDialogByRecipientId(id).getBody();
+    }
+
+    public Page<MessageShortDto> getMessages(UUID recipientId, Pageable pageable) {
+        return communicationsServiceClient.getMessages(recipientId, pageable).getBody();
     }
 }

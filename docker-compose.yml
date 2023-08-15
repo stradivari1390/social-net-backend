@@ -42,6 +42,7 @@ services:
   user-service:
     container_name: user-service
     image: javapro38/soc-net-user-svc
+    restart: unless-stopped
     depends_on:
       - postgres
     environment:
@@ -50,12 +51,19 @@ services:
       POSTGRES_DB: ${postgres_db}
       POSTGRES_HOST: ${postgres_host}
       POSTGRES_INTERNAL_PORT: ${postgres_internal_port}
+      application_base_url: ${application_base_url}
+      app_mail_username: ${app_mail_username}
+      app_mail_password: ${app_mail_password}
+      geoService_urlData: ${geoService_urlData}
+      geonames_userName: ${geonames_userName}
+
     networks:
       - socialnet_network
 
   communications-service:
     container_name: communications-service
     image: javapro38/soc-net-comm-svc
+    restart: unless-stopped
     depends_on:
       - postgres
     environment:
@@ -64,16 +72,19 @@ services:
       POSTGRES_DB: ${postgres_db}
       POSTGRES_HOST: ${postgres_host}
       POSTGRES_INTERNAL_PORT: ${postgres_internal_port}
+      max_upload_file_size: ${max_upload_file_size}
       yandex_endpoint: ${yandex_endpoint}
       yandex_accesskey: ${yandex_accesskey}
       yandex_secretkey: ${yandex_secretkey}
       yandex_bucketname: ${yandex_bucketname}
+
     networks:
       - socialnet_network
 
   gateway-service:
     container_name: gateway-service
     image: javapro38/soc-net-gate-svc
+    restart: unless-stopped
     depends_on:
       - user-service
       - communications-service
@@ -81,6 +92,7 @@ services:
       user_service_url: ${user_service_url}
       communications_service_url: ${communications_service_url}
       cors_origin: ${cors_origin}
+      max_upload_file_size: ${max_upload_file_size}
     networks:
       - socialnet_network
 

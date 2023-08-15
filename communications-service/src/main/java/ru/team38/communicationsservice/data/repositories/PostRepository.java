@@ -7,6 +7,7 @@ import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Repository;
+import ru.team38.common.dto.other.StatusCode;
 import ru.team38.common.dto.post.*;
 import ru.team38.common.jooq.Tables;
 import ru.team38.common.jooq.tables.Account;
@@ -35,19 +36,45 @@ public class PostRepository {
     private final Account account = Account.ACCOUNT;
     private final Tag tag = Tag.TAG;
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
+    public UUID getUserIdByEmail(String email){
+        AccountRecord accountRecord = dsl.selectFrom(account)
+                .where(account.EMAIL.eq(email))
+                .fetchOne();
+        return accountRecord == null ? null : accountRecord.getId();
+    }
 
-    public List<PostDto> getPostDtosByEmail(ConditionPostDto conditionPostDto, String email) {
-        UUID accountId = getUserIdByEmail(email);
-        updateType();
-        if (conditionPostDto.getAccountIds() != null) {
-            return postMapper.postRecords2PostDtos(searchPostsByUserId(conditionPostDto, conditionPostDto.getAccountIds()));
-        }
-        if (!conditionPostDto.getWithFriends()) {
-            return postMapper.postRecords2PostDtos(searchPostsByTag(conditionPostDto));
-        }
-        List<PostDto> list = postMapper.postRecords2PostDtos(searchPostsWithFriend(conditionPostDto, accountId));
-        list.addAll(postMapper.postRecords2PostDtos(searchPostsByUserId(conditionPostDto, accountId)));
-        return list;
+    public List<PostDto> getPostsWithFriend(Condition condition, UUID accountId) {
+        List<PostRecord> list = dsl.select()
+                .from(post)
+                .join(friends)
+                .on(friends.REQUESTED_ACCOUNT_ID.eq(post.AUTHOR_ID))
+                .where(friends.ACCOUNT_FROM_ID.eq(accountId))
+                .and(friends.STATUS_CODE.eq(StatusCode.FRIEND.name()))
+                .and(condition)
+                .fetchInto(PostRecord.class);
+        list.addAll(dsl.select()
+                .from(post)
+                .where(post.AUTHOR_ID.eq(accountId))
+                .and(condition)
+                .fetchInto(PostRecord.class));
+        return list.stream().map(postMapper::postRecord2PostDto).toList();
+    }
+
+    public List<PostDto> getPostsByUserId(Condition condition, UUID accountId) {
+        return dsl.select()
+                .from(post)
+                .where(post.AUTHOR_ID.eq(accountId))
+                .and(condition)
+                .fetch()
+                .map(record -> postMapper.postRecord2PostDto(record.into(post)));
+    }
+
+    public List<PostDto> getAllPosts(Condition condition){
+        return dsl.select()
+                .from(post)
+                .where(condition)
+                .fetch()
+                .map(record -> postMapper.postRecord2PostDto(record.into(post)));
     }
 
     public PostDto createPost(InsertPostDto insertPostDto, String email) {
@@ -99,41 +126,10 @@ public class PostRepository {
         }
     }
 
-    private List<PostRecord> searchPostsByUserId(ConditionPostDto conditionPostDto, UUID accountId) {
-        return dsl.select()
-                .from(post)
-                .where(post.AUTHOR_ID.eq(accountId))
-                .and(conditionPostDto.getSearchConditions())
-                .orderBy(conditionPostDto.getSort())
-                .fetch()
-                .into(PostRecord.class);
-    }
-
-    private List<PostRecord> searchPostsWithFriend(ConditionPostDto conditionPostDto, UUID accountId) {
-        return dsl.select()
-                .from(post)
-                .join(friends)
-                .on(friends.REQUESTED_ACCOUNT_ID.eq(post.AUTHOR_ID))
-                .where(friends.ACCOUNT_FROM_ID.eq(accountId))
-                .and(friends.STATUS_CODE.eq("FRIEND"))
-                .and(conditionPostDto.getSearchConditions())
-                .orderBy(conditionPostDto.getSort())
-                .fetch()
-                .into(PostRecord.class);
-    }
-    private List<PostRecord> searchPostsByTag (ConditionPostDto conditionPostDto){
-        return dsl.select()
-                .from(post)
-                .where(conditionPostDto.getSearchConditions())
-                .orderBy(conditionPostDto.getSort())
-                .fetch()
-                .into(PostRecord.class);
-    }
-
-
-    private void updateType(){
+    public void updateType(){
         dsl.update(post)
                 .set(post.TYPE, PostType.POSTED.toString())
+                .set(post.TIME, LocalDateTime.now())
                 .where(post.PUBLISH_DATE.lessThan(LocalDateTime.now()))
                 .and(post.TYPE.eq(PostType.QUEUED.toString()))
                 .execute();
@@ -171,12 +167,5 @@ public class PostRepository {
         return dsl.fetchExists(DSL
                 .selectFrom(tag)
                 .where(tag.NAME.eq(tagName)));
-    }
-
-    private UUID getUserIdByEmail(String email){
-        AccountRecord accountRecord = dsl.selectFrom(account)
-                .where(account.EMAIL.eq(email))
-                .fetchOne();
-        return accountRecord == null ? null : accountRecord.getId();
     }
 }

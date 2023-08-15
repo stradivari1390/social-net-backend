@@ -5,15 +5,13 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Repository;
-import ru.team38.common.dto.notification.DataTimestampDto;
+import ru.team38.common.dto.notification.NotificationDto;
 import ru.team38.common.jooq.tables.Notification;
 import ru.team38.common.jooq.tables.records.NotificationRecord;
 import ru.team38.common.mappers.NotificationMapper;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,14 +24,8 @@ public class NotificationRepository {
         return DSL.fetchCount(NTF, NTF.RECEIVER_ID.eq(accountId), NTF.IS_READED.isFalse());
     }
 
-    public List<DataTimestampDto> getNotificationsByAccountId(UUID accountId, Integer limit) {
-        Result<NotificationRecord> records = getLastNotifications(accountId, limit);
-        return records.stream().map(record -> {
-            DataTimestampDto data = new DataTimestampDto();
-            data.setTimestamp(ZonedDateTime.now());
-            data.setData(mapper.notificationRecordToNotificationDto(record));
-            return data;
-        }).collect(Collectors.toList());
+    public List<NotificationDto> getNotificationsByAccountId(UUID accountId, Integer limit) {
+        return mapper.notificationRecordsToNotificationDtos(getLastNotifications(accountId, limit));
     }
 
     public void updateNotificationsReadByAccountId(UUID accountId, Integer limit) {
@@ -43,6 +35,6 @@ public class NotificationRepository {
 
     private  Result<NotificationRecord> getLastNotifications(UUID accountId, Integer limit) {
         return DSL.selectFrom(NTF).where(NTF.RECEIVER_ID.eq(accountId), NTF.IS_READED.isFalse())
-                .orderBy(NTF.SEND_TIME.asc()).limit(limit).fetch();
+                .orderBy(NTF.SEND_TIME.desc()).limit(limit).fetch();
     }
 }

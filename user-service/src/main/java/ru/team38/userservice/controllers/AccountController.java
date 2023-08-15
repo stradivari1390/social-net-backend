@@ -3,7 +3,10 @@ package ru.team38.userservice.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.team38.common.dto.*;
+import ru.team38.common.dto.account.AccountDto;
+import ru.team38.common.dto.account.AccountSearchDto;
+import ru.team38.common.dto.other.PageDto;
+import ru.team38.common.dto.other.PageResponseDto;
 import ru.team38.userservice.services.AccountService;
 
 import java.util.UUID;
@@ -21,7 +24,7 @@ public class AccountController {
 
     @GetMapping("/me")
     public ResponseEntity<AccountDto> getAccount() {
-        return ResponseEntity.ok(accountService.getAuthenticatedAccount());
+        return ResponseEntity.ok(accountService.getAuthenticatedAccountWithUpdateOnline());
     }
 
     @PutMapping("/me")
@@ -36,8 +39,14 @@ public class AccountController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<PageAccountDto> findAccount(AccountSearchDto accountSearch, PageDto page) {
+    public ResponseEntity<PageResponseDto<AccountDto>> findAccount(AccountSearchDto accountSearch, PageDto page) {
         return ResponseEntity.ok(accountService.findAccount(accountSearch, page));
+    }
+
+    @GetMapping("/search/statusCode")
+    public ResponseEntity<PageResponseDto<AccountDto>> findAccountByStatusCode(AccountSearchDto accountSearchDto,
+                                                                  PageDto pageDto) {
+        return ResponseEntity.ok(accountService.findAccountByStatusCode(accountSearchDto, pageDto));
     }
 
     @GetMapping("/{id}")

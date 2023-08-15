@@ -1,16 +1,21 @@
 package ru.team38.gatewayservice.service;
 
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.team38.common.dto.*;
+import org.springframework.web.bind.annotation.RequestHeader;
+import ru.team38.common.dto.account.*;
+import ru.team38.common.dto.friend.FriendSearchDto;
+import ru.team38.common.dto.friend.FriendShortDto;
+import ru.team38.common.dto.geography.CityDto;
+import ru.team38.common.dto.geography.CountryDto;
 import ru.team38.common.dto.notification.DataTimestampDto;
 import ru.team38.common.dto.notification.NotificationSettingDto;
 import ru.team38.common.dto.notification.NotificationUpdateDto;
-import ru.team38.common.dto.notification.NotificationsPageDto;
+import ru.team38.common.dto.other.CountDto;
+import ru.team38.common.dto.other.PageDto;
+import ru.team38.common.dto.other.PageResponseDto;
 import ru.team38.gatewayservice.clients.UserServiceClient;
 
 import java.util.List;
@@ -40,22 +45,11 @@ public class UserService {
     }
 
     public CaptchaDto getCaptcha() {
-        ResponseEntity<CaptchaDto> responseEntity = userServiceClient.getCaptcha();
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            return responseEntity.getBody();
-        } else {
-            throw new RuntimeException("Failed to get captcha");
-        }
+        return userServiceClient.getCaptcha().getBody();
     }
 
     public CountDto getIncomingFriendRequestsCount() {
-        try {
-            ResponseEntity<CountDto> responseEntity = userServiceClient.getIncomingFriendRequestsCount();
-            return responseEntity.getBody();
-        } catch (FeignException e) {
-            log.error(e.contentUTF8(), e);
-            throw new RuntimeException(e.contentUTF8(), e);
-        }
+        return userServiceClient.getIncomingFriendRequestsCount().getBody();
     }
 
     public AccountDto createAccount(AccountDto accountDto) {
@@ -71,20 +65,15 @@ public class UserService {
     }
 
     public AccountDto getAccountById(UUID id) {
-        try {
-            return userServiceClient.getAccountById(id).getBody();
-        } catch (FeignException e) {
-            log.error(e.contentUTF8());
-            throw new RuntimeException(e.contentUTF8(), e);
-        }
+        return userServiceClient.getAccountById(id).getBody();
     }
 
     public DataTimestampDto getNotificationsCount() {
         return userServiceClient.getNotificationsCount().getBody();
     }
 
-    public NotificationsPageDto getNotificationsPage() {
-        return userServiceClient.getNotificationsPage().getBody();
+    public PageResponseDto<DataTimestampDto> getNotificationsPage(@RequestHeader("x-lang") String lang) {
+        return userServiceClient.getNotificationsPage(lang).getBody();
     }
 
     public String readAllNotifications() {
@@ -107,8 +96,8 @@ public class UserService {
         return userServiceClient.deleteAccount();
     }
 
-    public PageFriendShortDto getFriendsByParameters(FriendSearchDto friendSearchDto, PageDto pageDto) {
-        ResponseEntity<PageFriendShortDto> responseEntity = userServiceClient.getFriendsByParameters(
+    public PageResponseDto<Object> getFriendsByParameters(FriendSearchDto friendSearchDto, PageDto pageDto) {
+        ResponseEntity<PageResponseDto<Object>> responseEntity = userServiceClient.getFriendsByParameters(
                 friendSearchDto.getStatusCode(),
                 friendSearchDto.getFirstName(),
                 friendSearchDto.getCity(),
@@ -138,14 +127,69 @@ public class UserService {
 
     public ResponseEntity<List<CityDto>> getCitiesByCountryId(String countryId) {
         return userServiceClient.getCitiesByCountryId(countryId);
+
     }
 
-    public PageAccountDto findAccount(AccountSearchDto accountSearchDto, PageDto pageDto) {
-        ResponseEntity<PageAccountDto> responseEntity = userServiceClient
+    public PageResponseDto<AccountDto> findAccount(AccountSearchDto accountSearchDto, PageDto pageDto) {
+        ResponseEntity<PageResponseDto<AccountDto>> responseEntity = userServiceClient
                 .findAccount(accountSearchDto.getFirstName(),
                         accountSearchDto.getLastName(),
                         accountSearchDto.getAgeFrom(),
-                        accountSearchDto.getAgeTo());
+                        accountSearchDto.getAgeTo(),
+                        accountSearchDto.getCountry(),
+                        accountSearchDto.getCity(),
+                        accountSearchDto.getAuthor(),
+                        accountSearchDto.getIds(),
+                        accountSearchDto.isDeleted(),
+                        pageDto.getPage(), pageDto.getSize(), pageDto.getSort());
         return responseEntity.getBody();
+    }
+
+    public PageResponseDto<AccountDto> findAccountByStatusCode(AccountSearchDto accountSearchDto, PageDto pageDto) {
+        ResponseEntity<PageResponseDto<AccountDto>> responseEntity = userServiceClient
+                .findAccountByStatusCode(accountSearchDto.getFirstName(),
+                        accountSearchDto.getStatusCode(), pageDto.getPage(),
+                        pageDto.getSize(), pageDto.getSort());
+        return responseEntity.getBody();
+    }
+
+    public FriendShortDto blockAccount(UUID id) {
+        return userServiceClient.blockAccount(id).getBody();
+    }
+
+    public FriendShortDto unblockAccount(UUID id) {
+        return userServiceClient.unblockAccount(id).getBody();
+    }
+
+    public ResponseEntity<String> recoverPassword(EmailDto emailDto) {
+        return userServiceClient.recoverPassword(emailDto);
+    }
+
+    public ResponseEntity<String> setNewPassword(String linkId, NewPasswordDto newPasswordDto) {
+        return userServiceClient.setNewPassword(linkId, newPasswordDto);
+    }
+
+    public FriendShortDto makeFriendRequest(UUID id) {
+        return userServiceClient.makeFriendRequest(id).getBody();
+    }
+
+    public FriendShortDto approveFriendRequest(UUID id) {
+        return userServiceClient.approveFriendRequest(id).getBody();
+    }
+
+    public void deleteRelationship(UUID id) {
+        userServiceClient.deleteRelationship(id);
+    }
+
+    public FriendShortDto getSubscription(UUID id) {
+        return userServiceClient.getSubscription(id).getBody();
+    }
+
+    public ResponseEntity<String> changePassword(ChangePasswordDto passwordDto) {
+        return userServiceClient.changePassword(passwordDto);
+    }
+
+    public ResponseEntity<String> changeEmail(EmailDto emailDto) {
+        return userServiceClient.changeEmail(emailDto);
     }
 }

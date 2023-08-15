@@ -7,7 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.team38.common.aspects.LoggingClass;
-import ru.team38.common.dto.comment.*;
+import ru.team38.common.dto.comment.CommentDto;
+import ru.team38.common.dto.comment.CommentUpdateDto;
+import ru.team38.common.dto.notification.NotificationTypeEnum;
+import ru.team38.common.dto.other.PageResponseDto;
+import ru.team38.common.dto.other.PageableDto;
+import ru.team38.common.dto.other.PublicationType;
+import ru.team38.common.dto.other.SortDto;
+import ru.team38.common.services.NotificationAddService;
 import ru.team38.communicationsservice.data.repositories.CommentRepository;
 import ru.team38.communicationsservice.exceptions.BadCommentRequestException;
 
@@ -25,23 +32,26 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final JwtService jwtService;
+    private final NotificationAddService notificationService;
 
     public CommentDto createComment(HttpServletRequest request, UUID postId, Map<String, String> payload) {
         if (payload.containsKey("parentId")) {
             return createSubComment(request, postId,
                     UUID.fromString(payload.get("parentId")), payload.get("commentText"));
         }
-        String username = jwtService.getUsernameFromToken(request);
+        String authorName = jwtService.getUsernameFromToken(request);
         CommentDto commentDto = CommentDto.builder()
                 .id(UUID.randomUUID())
-                .commentType(CommentType.POST)
+                .commentType(PublicationType.POST)
                 .time(ZonedDateTime.now())
                 .timeChanged(ZonedDateTime.now())
-                .authorId(commentRepository.getIdByUsername(username))
+                .authorId(commentRepository.getIdByUsername(authorName))
                 .commentText(payload.get("commentText"))
                 .postId(postId)
                 .build();
-        return commentRepository.createComment(commentDto);
+        commentDto = commentRepository.createComment(commentDto);
+        notificationService.addNotification(commentDto.getAuthorId(), commentDto, NotificationTypeEnum.POST_COMMENT);
+        return commentDto;
     }
 
     public CommentDto updateComment(HttpServletRequest request, CommentUpdateDto commentUpdateDto) {
@@ -57,18 +67,20 @@ public class CommentService {
     }
 
     public CommentDto createSubComment(HttpServletRequest request, UUID postId, UUID parentId, String text) {
-        String username = jwtService.getUsernameFromToken(request);
+        String authorName = jwtService.getUsernameFromToken(request);
         CommentDto commentDto = CommentDto.builder()
                 .id(UUID.randomUUID())
-                .commentType(CommentType.COMMENT)
+                .commentType(PublicationType.COMMENT)
                 .time(ZonedDateTime.now())
                 .timeChanged(ZonedDateTime.now())
-                .authorId(commentRepository.getIdByUsername(username))
+                .authorId(commentRepository.getIdByUsername(authorName))
                 .commentText(text)
                 .postId(postId)
                 .parentId(parentId)
                 .build();
-        return commentRepository.createComment(commentDto);
+        commentDto = commentRepository.createComment(commentDto);
+        notificationService.addNotification(commentDto.getAuthorId(), commentDto, NotificationTypeEnum.COMMENT_COMMENT);
+        return commentDto;
     }
 
     public void deleteComment(HttpServletRequest request, UUID postId, UUID commentId) {
@@ -81,17 +93,17 @@ public class CommentService {
         }
     }
 
-    public CommentSearchDto getComments(UUID postId, Pageable pageable) {
+    public PageResponseDto<CommentDto> getComments(UUID postId, Pageable pageable) {
         List<CommentDto> comments = commentRepository.getMainComments(postId, pageable);
-        return createCommentSearchDto(comments, pageable);
+        return createPageResponseDto(comments, pageable);
     }
 
-    public CommentSearchDto getSubComments(UUID commentId, Pageable pageable) {
+    public PageResponseDto<CommentDto> getSubComments(UUID commentId, Pageable pageable) {
         List<CommentDto> comments = commentRepository.getSubComments(commentId, pageable);
-        return createCommentSearchDto(comments, pageable);
+        return createPageResponseDto(comments, pageable);
     }
 
-    private CommentSearchDto createCommentSearchDto(List<CommentDto> comments, Pageable pageable) {
+    private PageResponseDto<CommentDto> createPageResponseDto(List<CommentDto> comments, Pageable pageable) {
         boolean isLast = comments.size() <= pageable.getPageSize();
 
         if (!isLast) {
@@ -106,7 +118,7 @@ public class CommentService {
         PageableDto pageableDto = new PageableDto(sortDto, pageable.getPageNumber(), pageable.getPageSize(),
                 (int) pageable.getOffset(), pageable.isUnpaged(), pageable.isPaged());
 
-        return CommentSearchDto.builder()
+        return PageResponseDto.<CommentDto>builder()
                 .content(comments)
                 .last(isLast)
                 .totalElements(comments.size())

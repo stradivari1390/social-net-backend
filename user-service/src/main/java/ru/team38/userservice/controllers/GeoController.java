@@ -3,8 +3,8 @@ package ru.team38.userservice.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.team38.common.dto.CityDto;
-import ru.team38.common.dto.CountryDto;
+import ru.team38.common.dto.geography.CityDto;
+import ru.team38.common.dto.geography.CountryDto;
 import ru.team38.userservice.services.GeoService;
 
 import java.util.List;
@@ -16,6 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 public class GeoController {
     private final GeoService geoService;
+    @PutMapping("/load")
+    public ResponseEntity<String> loadGeoData() {
+        return ResponseEntity.ok("Обновление стран автоматизировано и ручной перезагрузки не требует");
+    }
     @GetMapping("/country")
     public ResponseEntity<List<CountryDto>> getCountries() {
         return geoService.getCountries();
@@ -26,4 +30,5 @@ public class GeoController {
     public ResponseEntity<List<CityDto>> getCitiesByCountryId(@PathVariable String countryId) {
         return ResponseEntity.ok(geoService.getCitiesByCountryId(countryId));
     }
+
 }
